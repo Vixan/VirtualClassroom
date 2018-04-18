@@ -23,5 +23,7 @@ namespace VirtualClassroom.Domain
         public string Email { get; set; }
 
         List<Activity> Activities { get; set; }
+        
+        List<ActivityInfo> ActivityInfos { get; set; }
     }
 }
