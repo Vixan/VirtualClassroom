@@ -3,27 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom", "VirtualClassroom\VirtualClassroom.csproj", "{36F76757-9395-4669-9AF0-2142840371B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom", "VirtualClassroom\VirtualClassroom.csproj", "{36F76757-9395-4669-9AF0-2142840371B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{6EA16CE7-2E65-444D-998D-0A875605E2E0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Persistance", "Persistance", "{A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Persistence", "Persistence", "{A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{1FB75753-9F1E-4BBB-8EA0-B09EC3F031FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{57AD9D6E-6245-40E8-8503-5BECC2EA5FA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Authentication", "VirtualClassroom.Authentication\VirtualClassroom.Authentication.csproj", "{B97DB017-0FE4-46B4-9167-AE972B2957D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Authentication", "VirtualClassroom.Authentication\VirtualClassroom.Authentication.csproj", "{B97DB017-0FE4-46B4-9167-AE972B2957D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Domain", "VirtualClassroom.Domain\VirtualClassroom.Domain.csproj", "{FAFE5F22-0269-4F73-AA79-B47303C2FDB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Domain", "VirtualClassroom.Domain\VirtualClassroom.Domain.csproj", "{FAFE5F22-0269-4F73-AA79-B47303C2FDB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Core", "VirtualClassroom.Core\VirtualClassroom.Core.csproj", "{BFB96421-7423-4F49-AC02-88BE9A79E5C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Core", "VirtualClassroom.Core\VirtualClassroom.Core.csproj", "{BFB96421-7423-4F49-AC02-88BE9A79E5C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Core.Shared", "VirtualClassroom.Core.Shared\VirtualClassroom.Core.Shared.csproj", "{22F509B1-7A0A-4EBF-ADFE-B52321AF657B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Core.Shared", "VirtualClassroom.Core.Shared\VirtualClassroom.Core.Shared.csproj", "{22F509B1-7A0A-4EBF-ADFE-B52321AF657B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Persistance", "VirtualClassroom.Persistance\VirtualClassroom.Persistance.csproj", "{C3A632F4-20EB-4A9A-9FE5-07EF54F1D300}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistence", "VirtualClassroom.Persistance\VirtualClassroom.Persistence.csproj", "{C3A632F4-20EB-4A9A-9FE5-07EF54F1D300}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.Persistance.EF", "VirtualClassroom.Persistance.EF\VirtualClassroom.Persistance.EF.csproj", "{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistence.EF", "VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj", "{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B6291C5B-F582-4C45-BA43-0028750C083D}"
 EndProject
