@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VirtualClassroom.Persistance;
 
-namespace VirtualClassroom.Persistence
+namespace VirtualClassroom.Persistence.EF
 {
-    class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         public void Add(T entity)
         {
