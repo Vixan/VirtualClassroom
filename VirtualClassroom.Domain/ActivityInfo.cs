@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VirtualClassroom.Domain
 {
-    class ActivityInfo
+    public class ActivityInfo
     {
         public int Identifier { get; set; }
 
