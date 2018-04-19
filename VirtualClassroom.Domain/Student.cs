@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VirtualClassroom.Domain
 {
-    class Student
+    public class Student
     {
         public int Identifier { get; set; }
 
