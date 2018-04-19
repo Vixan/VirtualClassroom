@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using VirtualClassroom.Models;
-using VirtualClassroom.Models.AccountViewModels;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using VirtualClassroom.Authentication;
+using VirtualClassroom.Authentication.Models.AccountViewModels;
+using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.Services;
 
 namespace VirtualClassroom.Controllers
@@ -67,10 +64,12 @@ namespace VirtualClassroom.Controllers
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
+                /*
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToAction(nameof(LoginWith2fa), new { returnUrl, model.RememberMe });
                 }
+                */
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
@@ -87,6 +86,7 @@ namespace VirtualClassroom.Controllers
             return View(model);
         }
 
+        /*
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
@@ -196,6 +196,7 @@ namespace VirtualClassroom.Controllers
                 return View();
             }
         }
+        */
 
         [HttpGet]
         [AllowAnonymous]

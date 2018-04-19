@@ -25,8 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistenc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistence.EF", "VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj", "{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B6291C5B-F582-4C45-BA43-0028750C083D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,7 +71,6 @@ Global
 		{22F509B1-7A0A-4EBF-ADFE-B52321AF657B} = {6EA16CE7-2E65-444D-998D-0A875605E2E0}
 		{C3A632F4-20EB-4A9A-9FE5-07EF54F1D300} = {A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}
 		{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE} = {A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}
-		{B6291C5B-F582-4C45-BA43-0028750C083D} = {57AD9D6E-6245-40E8-8503-5BECC2EA5FA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B142723-5B81-425F-9D5D-CE270E0AB124}
