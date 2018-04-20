@@ -9,15 +9,19 @@ namespace VirtualClassroom.Core
         public bool CreateActivity(int professorIdentifier, Activity activity)
         {
             // get professor from DB
-            Professor professor;
+            Professor professor = new Professor();
 
-            //professor.
+            professor.Activities.Add(activity);
+
+            // save changes
 
             throw new NotImplementedException();
         }
 
         public bool EditActivity(int professorIdentifier, Activity activity)
         {
+
+
             throw new NotImplementedException();
         }
 
