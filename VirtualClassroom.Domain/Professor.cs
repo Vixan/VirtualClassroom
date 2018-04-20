@@ -22,6 +22,6 @@ namespace VirtualClassroom.Domain
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        ICollection<Activity> Activities { get; set; }
+        public ICollection<Activity> Activities { get; set; }
     }
 }
