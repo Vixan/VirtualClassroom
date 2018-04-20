@@ -5,9 +5,9 @@ using System.Text;
 
 namespace VirtualClassroom.Domain
 {
-    class ActivityTypes
+    public class ActivityType
     {
-        public int Identifier { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Activity Type is required")]
         [DataType(DataType.Text)]

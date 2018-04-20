@@ -7,7 +7,7 @@ namespace VirtualClassroom.Domain
 {
     public class Professor
     {
-        public int Identifier { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Professor first name is required")]
         [DataType(DataType.Text)]
@@ -22,6 +22,6 @@ namespace VirtualClassroom.Domain
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        List<Activity> Activities { get; set; }
+        ICollection<Activity> Activities { get; set; }
     }
 }

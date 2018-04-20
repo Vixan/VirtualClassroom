@@ -7,7 +7,7 @@ namespace VirtualClassroom.Domain
 {
     public class Activity
     {
-        public int Identifier { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Activity Name is required")]
         [DataType(DataType.Text)]
@@ -18,14 +18,9 @@ namespace VirtualClassroom.Domain
         [MaxLength(255, ErrorMessage = "Name must be maximum 255 characters long")]
         public int Description { get; set; }
 
-        [Required(ErrorMessage = "Professor Identifier is required")]
-        public int ProfessorIdentifier { get; set; }
+        public virtual ICollection<ActivityOccurence> OccurenceDates { get; set; }
 
-        List<Student> Students;
-
-        List<DateTime> Schedule { get; set; }
-
-        [Required(ErrorMessage = "Activity Type Identifier is required")]
-        public int ActivityTypeIdentifier { get; set; }
+        [Required(ErrorMessage = "Activity Type is required")]
+        public ActivityType ActivityType { get; set; }
     }
 }
