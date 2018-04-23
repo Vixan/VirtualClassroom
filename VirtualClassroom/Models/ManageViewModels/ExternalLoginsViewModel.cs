@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-namespace VirtualClassroom.Authentication.Models.ManageViewModels
+namespace VirtualClassroom.Models.ManageViewModels
 {
     public class ExternalLoginsViewModel
     {

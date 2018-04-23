@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace VirtualClassroom.Authentication.Models.AccountViewModels
+namespace VirtualClassroom.Models.AccountViewModels
 {
     public class ExternalLoginViewModel
     {

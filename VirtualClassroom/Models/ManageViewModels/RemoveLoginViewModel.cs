@@ -1,4 +1,4 @@
-﻿namespace VirtualClassroom.Authentication.Models.ManageViewModels
+﻿namespace VirtualClassroom.Models.ManageViewModels
 {
     public class RemoveLoginViewModel
     {
