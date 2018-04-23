@@ -7,8 +7,8 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
-using VirtualClassroom.Authentication.Models.AccountViewModels;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.Models.AccountViewModels;
 using VirtualClassroom.Services;
 
 namespace VirtualClassroom.Controllers

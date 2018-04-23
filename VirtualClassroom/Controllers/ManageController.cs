@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Models.ManageViewModels;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.Models.ManageViewModels;
 using VirtualClassroom.Services;
 
 namespace VirtualClassroom.Controllers
