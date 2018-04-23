@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Data;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.Persistence.EF;
 
 namespace VirtualClassroom
 {
@@ -28,6 +29,10 @@ namespace VirtualClassroom
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddDbContext<DummyDbContext>(options =>
+              options.UseSqlServer(Configuration.GetConnectionString("AuthConnection"),
+              b => b.MigrationsAssembly("VirtualClassroom")));
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
