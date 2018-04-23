@@ -1,58 +1,89 @@
-﻿using System;
-using VirtualClassroom.Core.Shared;
+﻿using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
+using VirtualClassroom.Persistence;
 
 namespace VirtualClassroom.Core
 {
     class ProfessorServices : IProfessorLogic
     {
-        // private IPersistanceContext persistanceContext;
+        private readonly IPersistanceContext persistanceContext;
+
+        public ProfessorServices(IPersistanceContext persistanceContext)
+        {
+            this.persistanceContext = persistanceContext;
+        }
 
         public bool CreateActivity(int professorIdentifier, Activity activity)
         {
-            
-            Professor professor = new Professor();
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+            Professor professor = professorRepository.GetById(professorIdentifier);
 
             professor.Activities.Add(activity);
-
-            // save changes
+            professorRepository.Save();
 
             return true;
         }
 
         public bool EditActivity(int professorIdentifier, Activity activity)
         {
-            // get professo from Db
-            Professor professor = new Professor();
-            Activity activity_to_edit = null;
-            
-            foreach(var professor_activity in professor.Activities)
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+            Professor professor = professorRepository.GetById(professorIdentifier);
+
+            Activity activityToEdit = null;
+            foreach(var professorActivity in professor.Activities)
             {
-                if(professor_activity.Id == activity.Id)
+                if(professorActivity.Id == activity.Id)
                 {
-                    activity_to_edit = professor_activity;
+                    activityToEdit = professorActivity;
                     break;
                 }
             }
 
-            if (activity_to_edit == null)
+            if (activityToEdit == null)
                 return false;
 
-            activity_to_edit = activity;
-
-            // save changes
+            activityToEdit = activity;
+            professorRepository.Save();
 
             return true;
         }
 
         public bool DeleteActivity(int professorIdentifier, int activityIdentifier)
         {
-            throw new NotImplementedException();
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+            Professor professor = professorRepository.GetById(professorIdentifier);
+
+            Activity activityToDelete = null;
+            foreach (var professorActivity in professor.Activities)
+            {
+                if (professorActivity.Id == activityIdentifier)
+                {
+                    activityToDelete = professorActivity;
+                    break;
+                }
+            }
+
+            if (activityToDelete == null)
+                return false;
+
+            professor.Activities.Remove(activityToDelete);
+            professorRepository.Save();
+
+            return true;
         }
 
         public Activity GetActivity(int professorIdentifier, int activityIdentifier)
         {
-            throw new NotImplementedException();
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+            Professor professor = professorRepository.GetById(professorIdentifier);
+
+            foreach(var professorActivity in professor.Activities)
+            {
+                if (professorActivity.Id == activityIdentifier)
+                    return professorActivity;
+            }
+
+            return null;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace VirtualClassroom.Core.Shared
 {
     public interface IStudentLogic
     {
-        IEnumerable<Activity> ViewActivities(Student student);
+        IEnumerable<Activity> ViewActivities(int studentIdentifier);
 
         IEnumerable<int> ViewActivityGrades(int studentIdentifier, int activityIdentifier);
 

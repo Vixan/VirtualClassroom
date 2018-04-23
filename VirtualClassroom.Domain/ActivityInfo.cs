@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace VirtualClassroom.Domain
 {
@@ -9,8 +6,11 @@ namespace VirtualClassroom.Domain
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Activity Identifier is required")]
+        public int ActivityId { get; set; }
+
         [Required(ErrorMessage = "Student Identifier is required")]
-        public Student Student { get; set; }
+        public int Student { get; set; }
 
         [Range(1, 10, ErrorMessage = "Grade can only be between 1 and 10")]
         public int Grade { get; set; }
