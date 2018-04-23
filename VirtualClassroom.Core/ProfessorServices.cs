@@ -1,4 +1,5 @@
-﻿using VirtualClassroom.Core.Shared;
+
+using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Persistence;
 
@@ -38,7 +39,7 @@ namespace VirtualClassroom.Core
                     break;
                 }
             }
-
+            
             if (activityToEdit == null)
                 return false;
 
