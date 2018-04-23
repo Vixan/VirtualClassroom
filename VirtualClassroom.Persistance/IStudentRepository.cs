@@ -7,6 +7,6 @@ namespace VirtualClassroom.Persistence
     {
         Student GetByName(string name);
         Student GetByEmail(string email);
-        List<Activity> GetActivities();
+        List<Activity> GetActivities(int studentIdentifier);
     }
 }
