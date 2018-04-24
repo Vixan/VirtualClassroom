@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Data;
 using VirtualClassroom.Authentication.Services;
@@ -37,6 +39,8 @@ namespace VirtualClassroom
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddMvc();
+
+            CreateRoles(services.BuildServiceProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +67,40 @@ namespace VirtualClassroom
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            Task<IdentityResult> roleResult;
+
+            Task<bool> hasProfessorRole = roleManager.RoleExistsAsync("Professor");
+            hasProfessorRole.Wait();
+
+            if (!hasProfessorRole.Result)
+            {
+                IdentityRole professorRole = new IdentityRole()
+                {
+                    Name = "Professor"
+                };
+
+                roleResult = roleManager.CreateAsync(professorRole);
+                roleResult.Wait();
+            }
+
+            Task<bool> hasStudentsRole = roleManager.RoleExistsAsync("Student");
+            hasStudentsRole.Wait();
+
+            if (!hasStudentsRole.Result)
+            {
+                IdentityRole studentRole = new IdentityRole()
+                {
+                    Name = "Student"
+                };
+
+                roleResult = roleManager.CreateAsync(studentRole);
+                roleResult.Wait();
+            }
         }
     }
 }
