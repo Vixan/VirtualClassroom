@@ -1,4 +1,4 @@
-﻿namespace VirtualClassroom.Authentication
+﻿namespace VirtualClassroom.CommonAbstractions
 {
     public interface IAuthentication
     {
