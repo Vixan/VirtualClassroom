@@ -5,13 +5,6 @@
     <UserSecretsId>aspnet-VirtualClassroom-3990E90D-71A5-4695-9DA0-A2C378BA8861</UserSecretsId>
   </PropertyGroup>
 
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
@@ -19,8 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\VirtualClassroom.Authentication\VirtualClassroom.Authentication.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj" />
+    <ProjectReference Include="..\VirtualClassroom.Persistance\VirtualClassroom.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

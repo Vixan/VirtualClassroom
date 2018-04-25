@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VirtualClassroom.CommonAbstractions\VirtualClassroom.CommonAbstractions.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Domain\VirtualClassroom.Domain.csproj" />
   </ItemGroup>
 

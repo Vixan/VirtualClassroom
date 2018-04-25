@@ -2,6 +2,6 @@
 {
     public interface IAuthentication
     {
-        void Initialise();
+        void DoSomething();
     }
 }

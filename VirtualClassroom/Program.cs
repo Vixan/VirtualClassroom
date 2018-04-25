@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using VirtualClassroom.CommonAbstractions;
 
 namespace VirtualClassroom
 {
@@ -19,7 +13,8 @@ namespace VirtualClassroom
 
             using (var scope = host.Services.CreateScope())
             {
-            
+                var authenticationService = scope.ServiceProvider.GetService<IInitializer>();
+                authenticationService.InitializeData(scope.ServiceProvider);
             }
 
             host.Run();

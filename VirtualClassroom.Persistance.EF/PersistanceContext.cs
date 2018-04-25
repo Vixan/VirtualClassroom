@@ -1,10 +1,29 @@
-﻿namespace VirtualClassroom.Persistence.EF
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace VirtualClassroom.Persistence.EF
 {
-    class PersistanceContext : IPersistanceContext
+   public class PersistanceContext : IPersistanceContext
     {
-        private ActivitiesRepository activitiesRepository = new ActivitiesRepository();
-        private ProfessorRepository professorRepository = new ProfessorRepository();
-        private StudentRepository studentRepository = new StudentRepository();
+        private DummyDbContext dataContext = null;
+
+        private ActivitiesRepository activitiesRepository = null;
+        private ProfessorRepository professorRepository = null;
+        private StudentRepository studentRepository = null;
+
+        private void InitializeDbContext(IServiceProvider serviceProvider)
+        {
+            if (dataContext == null)
+            {
+                dataContext = serviceProvider.GetService<DummyDbContext>();
+
+                activitiesRepository = new ActivitiesRepository(dataContext);
+                professorRepository = new ProfessorRepository(dataContext);
+                studentRepository = new StudentRepository(dataContext);
+            }
+        }
 
         public IActivitiesRepository GetActivitiesRepository()
         {
@@ -19,6 +38,22 @@
         public IStudentRepository GetStudentRepository()
         {
             return studentRepository;
+        }
+
+        public void InitializeContext(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<DummyDbContext>(options =>
+              options.UseSqlServer(configuration.GetConnectionString("AuthConnection"),
+              b => b.MigrationsAssembly("VirtualClassroom.Persistence.EF")));
+
+            InitializeDbContext(services.BuildServiceProvider());
+        }
+
+        public void InitializeData(IServiceProvider serviceProvider)
+        {
+            InitializeDbContext(serviceProvider);
+
+            // Initialize data below
         }
     }
 }

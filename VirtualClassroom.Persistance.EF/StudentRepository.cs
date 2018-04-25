@@ -1,39 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Collections.Generic;
 using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Persistence.EF
 {
     class StudentRepository : Repository<Student>, IStudentRepository
     {
+        private DummyDbContext dataContext = null;
+
+        public StudentRepository(DummyDbContext context)
+        {
+            dataContext = context;
+        }
+
         public List<Activity> GetActivities(int studentIdentifier)
         {
-            using(var context = new DummyDbContext())
-            {
-                Student student = context.Students.Find(studentIdentifier);
+            Student student = dataContext.Students.Find(studentIdentifier);
 
-                return (List<Activity>)student.Activities;
-            }
+            return (List<Activity>)student.Activities;
+
         }
 
         public Student GetByEmail(string email)
         {
-            using(var context = new DummyDbContext())
-            {
-                return context.Students
-                       .Where(student => student.Email == email)
-                       .FirstOrDefault();
-            }
+            return dataContext.Students
+                   .Where(student => student.Email == email)
+                   .FirstOrDefault();
+
         }
 
         public Student GetByName(string name)
         {
-            using(var context = new DummyDbContext())
-            {
-                return context.Students
-                    .Where(student => student.FirstName == name)
-                    .FirstOrDefault();
-            }
+            return dataContext.Students
+                .Where(student => student.FirstName == name)
+                .FirstOrDefault();
+
         }
     }
 }

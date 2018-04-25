@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
-using VirtualClassroom.Authentication.Data;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.CommonAbstractions;
+using VirtualClassroom.Persistence;
 using VirtualClassroom.Persistence.EF;
 
 namespace VirtualClassroom
@@ -25,22 +22,21 @@ namespace VirtualClassroom
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AuthConnection")));
+            // Add authentication
+            services.AddScoped<IInitializer, AuthenticationInitializer>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            var authenticationService = services.BuildServiceProvider().GetService<IInitializer>();
+            authenticationService.InitializeContext(services, Configuration);
 
-            services.AddDbContext<DummyDbContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("AuthConnection"),
-              b => b.MigrationsAssembly("VirtualClassroom")));
+            // Add persistance
+            services.AddScoped<IPersistanceContext, PersistanceContext>();
 
+            var dataService = services.BuildServiceProvider().GetService<IPersistanceContext>();
+            dataService.InitializeContext(services, Configuration);
+           
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddMvc();
-
-            CreateRoles(services.BuildServiceProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,40 +63,6 @@ namespace VirtualClassroom
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private void CreateRoles(IServiceProvider serviceProvider)
-        {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            Task<IdentityResult> roleResult;
-
-            Task<bool> hasProfessorRole = roleManager.RoleExistsAsync("Professor");
-            hasProfessorRole.Wait();
-
-            if (!hasProfessorRole.Result)
-            {
-                IdentityRole professorRole = new IdentityRole()
-                {
-                    Name = "Professor"
-                };
-
-                roleResult = roleManager.CreateAsync(professorRole);
-                roleResult.Wait();
-            }
-
-            Task<bool> hasStudentsRole = roleManager.RoleExistsAsync("Student");
-            hasStudentsRole.Wait();
-
-            if (!hasStudentsRole.Result)
-            {
-                IdentityRole studentRole = new IdentityRole()
-                {
-                    Name = "Student"
-                };
-
-                roleResult = roleManager.CreateAsync(studentRole);
-                roleResult.Wait();
-            }
         }
     }
 }

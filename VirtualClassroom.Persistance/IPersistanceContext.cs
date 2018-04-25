@@ -1,6 +1,8 @@
-﻿namespace VirtualClassroom.Persistence
+﻿using VirtualClassroom.CommonAbstractions;
+
+namespace VirtualClassroom.Persistence
 {
-    public interface IPersistanceContext
+    public interface IPersistanceContext: IInitializer
     {
         IProfessorRepository GetProfessorRepository();
         IStudentRepository GetStudentRepository();
