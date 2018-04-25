@@ -2,11 +2,15 @@
 {
     public interface IAuthentication : IInitializer
     {
-        /*
-        ApplicationUser GetUser();
+        int GetUserId();
+        string GetUserName();
+        string GetUserEmail();
 
-        bool IsProfessor(ApplicationUser user);
-        bool IsStudent(ApplicationUser user);
-        */
+        bool IsProfessor();
+        bool IsStudent();
+
+        void Login();
+        void Logout();
+        void Register();
     }
 }
