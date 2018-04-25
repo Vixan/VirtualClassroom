@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
+using VirtualClassroom.Core;
+using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Persistence;
 using VirtualClassroom.Persistence.EF;
 
@@ -27,6 +29,10 @@ namespace VirtualClassroom
 
             var authenticationService = services.BuildServiceProvider().GetService<IInitializer>();
             authenticationService.InitializeContext(services, Configuration);
+
+            // Add bussines
+            services.AddScoped<IStudentServices, StudentServices>();
+            services.AddScoped<IProfessorServices, IProfessorServices>();
 
             // Add persistance
             services.AddScoped<IPersistanceContext, PersistanceContext>();
