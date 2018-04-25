@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistenc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistence.EF", "VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj", "{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualClassroom.CommonAbstractions", "VirtualClassroom.CommonAbstractions\VirtualClassroom.CommonAbstractions.csproj", "{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.CommonAbstractions", "VirtualClassroom.CommonAbstractions\VirtualClassroom.CommonAbstractions.csproj", "{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualClassroom.Persistence.Memory", "VirtualClassroom.Persistence.Memory\VirtualClassroom.Persistence.Memory.csproj", "{BE960544-FF60-44C2-B895-54B1E5D2EC08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE960544-FF60-44C2-B895-54B1E5D2EC08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE960544-FF60-44C2-B895-54B1E5D2EC08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE960544-FF60-44C2-B895-54B1E5D2EC08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE960544-FF60-44C2-B895-54B1E5D2EC08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +84,7 @@ Global
 		{C3A632F4-20EB-4A9A-9FE5-07EF54F1D300} = {A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}
 		{73C5AAD5-CB74-4A39-BD9F-D20D31A522EE} = {A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}
 		{DB0C5FDC-EF32-4DF6-A8A0-0A2009AB2833} = {57AD9D6E-6245-40E8-8503-5BECC2EA5FA1}
+		{BE960544-FF60-44C2-B895-54B1E5D2EC08} = {A75D1F0B-9173-4F56-8BF4-44057BEDFAC7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B142723-5B81-425F-9D5D-CE270E0AB124}

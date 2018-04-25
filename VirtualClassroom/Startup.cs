@@ -9,6 +9,7 @@ using VirtualClassroom.Core;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Persistence;
 using VirtualClassroom.Persistence.EF;
+using VirtualClassroom.Persistence.Memory;
 
 namespace VirtualClassroom
 {
@@ -28,18 +29,17 @@ namespace VirtualClassroom
             services.AddScoped<IAuthentication, AuthenticationInitializer>();
 
             var authenticationService = services.BuildServiceProvider().GetService<IAuthentication>();
-            authenticationService.InitializeContext(services, Configuration);
+            authenticationService.InitializeContext(services, Configuration);        
+
+            // Add persistance
+            services.AddScoped<IPersistanceContext, MemoryPersistenceContext>();           
+            var dataService = services.BuildServiceProvider().GetService<IPersistanceContext>();
+            dataService.InitializeContext(services, Configuration);
 
             // Add bussines
             services.AddScoped<IStudentServices, StudentServices>();
-            services.AddScoped<IProfessorServices, IProfessorServices>();
+            services.AddScoped<IProfessorServices, ProfessorServices>();
 
-            // Add persistance
-            services.AddScoped<IPersistanceContext, PersistanceContext>();
-
-            var dataService = services.BuildServiceProvider().GetService<IPersistanceContext>();
-            dataService.InitializeContext(services, Configuration);
-           
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddMvc();

@@ -23,6 +23,7 @@
     <ProjectReference Include="..\VirtualClassroom.Core\VirtualClassroom.Core.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Persistance\VirtualClassroom.Persistence.csproj" />
+    <ProjectReference Include="..\VirtualClassroom.Persistence.Memory\VirtualClassroom.Persistence.Memory.csproj" />
   </ItemGroup>
 
 </Project>

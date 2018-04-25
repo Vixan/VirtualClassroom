@@ -6,7 +6,7 @@ using VirtualClassroom.Persistence;
 
 namespace VirtualClassroom.Core
 {
-    class ProfessorServices : IProfessorServices
+  public  class ProfessorServices : IProfessorServices
     {
         private readonly IPersistanceContext persistanceContext;
 
