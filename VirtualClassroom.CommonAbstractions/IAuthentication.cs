@@ -4,6 +4,7 @@
     {
         /*
         ApplicationUser GetUser();
+
         bool IsProfessor(ApplicationUser user);
         bool IsStudent(ApplicationUser user);
         */
