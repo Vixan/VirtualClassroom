@@ -1,11 +1,12 @@
 
+using System.Collections.Generic;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Persistence;
 
 namespace VirtualClassroom.Core
 {
-    class ProfessorServices : IProfessorLogic
+    class ProfessorServices : IProfessorServices
     {
         private readonly IPersistanceContext persistanceContext;
 
@@ -85,6 +86,14 @@ namespace VirtualClassroom.Core
             }
 
             return null;
+        }
+
+        public IEnumerable<Activity> GetActivities(int professorIdentifier)
+        {
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+            Professor professor = professorRepository.GetById(professorIdentifier);
+
+            return professor.Activities;
         }
     }
 }

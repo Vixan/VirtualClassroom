@@ -1,8 +1,9 @@
-﻿using VirtualClassroom.Domain;
+﻿using System.Collections.Generic;
+using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Core.Shared
 {
-    public interface IProfessorLogic
+    public interface IProfessorServices
     {
         bool CreateActivity(int professorId, Activity activity);
 
@@ -11,5 +12,7 @@ namespace VirtualClassroom.Core.Shared
         bool DeleteActivity(int professorId, int activityIdentifier);
 
         Activity GetActivity(int professorIdentifier, int activityIdentifier);
+
+        IEnumerable<Activity> GetActivities(int professorIdentifier);
     }
 }

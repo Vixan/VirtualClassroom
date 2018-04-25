@@ -3,7 +3,7 @@ using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Core.Shared
 {
-    public interface IStudentLogic
+    public interface IStudentServices
     {
         IEnumerable<Activity> ViewActivities(int studentIdentifier);
 
