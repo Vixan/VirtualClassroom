@@ -1,7 +1,11 @@
 ﻿namespace VirtualClassroom.CommonAbstractions
 {
-    public interface IAuthentication
+    public interface IAuthentication : IInitializer
     {
-        void DoSomething();
+        /*
+        ApplicationUser GetUser();
+        bool IsProfessor(ApplicationUser user);
+        bool IsStudent(ApplicationUser user);
+        */
     }
 }

@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VirtualClassroom.Authentication\VirtualClassroom.Authentication.csproj" />
+    <ProjectReference Include="..\VirtualClassroom.Core.Shared\VirtualClassroom.Core.Shared.csproj" />
+    <ProjectReference Include="..\VirtualClassroom.Core\VirtualClassroom.Core.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Persistance.EF\VirtualClassroom.Persistence.EF.csproj" />
     <ProjectReference Include="..\VirtualClassroom.Persistance\VirtualClassroom.Persistence.csproj" />
   </ItemGroup>

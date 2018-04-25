@@ -14,7 +14,7 @@ namespace VirtualClassroom.Core
             this.persistanceContext = persistanceContext;
         }
 
-        public IEnumerable<Activity> ViewActivities(int studentIdentifier)
+        public IEnumerable<Activity> GetActivities(int studentIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
@@ -22,7 +22,7 @@ namespace VirtualClassroom.Core
             return student.Activities;
         }
 
-        public IEnumerable<bool> ViewActivityAttendance(int studentIdentifier, int activityIdentifier)
+        public IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
@@ -37,7 +37,7 @@ namespace VirtualClassroom.Core
             return activityAttendance;
         }
 
-        public IEnumerable<int> ViewActivityGrades(int studentIdentifier, int activityIdentifier)
+        public IEnumerable<int> GetActivityGrades(int studentIdentifier, int activityIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);

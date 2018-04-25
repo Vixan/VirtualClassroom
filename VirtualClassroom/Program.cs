@@ -13,7 +13,7 @@ namespace VirtualClassroom
 
             using (var scope = host.Services.CreateScope())
             {
-                var authenticationService = scope.ServiceProvider.GetService<IInitializer>();
+                var authenticationService = scope.ServiceProvider.GetService<IAuthentication>();
                 authenticationService.InitializeData(scope.ServiceProvider);
             }
 

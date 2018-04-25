@@ -9,7 +9,7 @@ using VirtualClassroom.CommonAbstractions;
 
 namespace VirtualClassroom.Authentication
 {
-    public class AuthenticationInitializer : IInitializer
+    public class AuthenticationInitializer : IAuthentication
     {
         public void InitializeContext(IServiceCollection services, IConfiguration configuration)
         {

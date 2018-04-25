@@ -5,10 +5,10 @@ namespace VirtualClassroom.Core.Shared
 {
     public interface IStudentServices
     {
-        IEnumerable<Activity> ViewActivities(int studentIdentifier);
+        IEnumerable<Activity> GetActivities(int studentIdentifier);
 
-        IEnumerable<int> ViewActivityGrades(int studentIdentifier, int activityIdentifier);
+        IEnumerable<int> GetActivityGrades(int studentIdentifier, int activityIdentifier);
 
-        IEnumerable<bool> ViewActivityAttendance(int studentIdentifier, int activityIdentifier);
+        IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier);
     }
 }

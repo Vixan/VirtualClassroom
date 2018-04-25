@@ -25,9 +25,9 @@ namespace VirtualClassroom
         public void ConfigureServices(IServiceCollection services)
         {
             // Add authentication
-            services.AddScoped<IInitializer, AuthenticationInitializer>();
+            services.AddScoped<IAuthentication, AuthenticationInitializer>();
 
-            var authenticationService = services.BuildServiceProvider().GetService<IInitializer>();
+            var authenticationService = services.BuildServiceProvider().GetService<IAuthentication>();
             authenticationService.InitializeContext(services, Configuration);
 
             // Add bussines
