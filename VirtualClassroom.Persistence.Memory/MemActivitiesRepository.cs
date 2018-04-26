@@ -5,7 +5,7 @@ using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Persistence.Memory
 {
-    public class MemActivitiesRepository : IProfessorRepository
+    public class MemActivitiesRepository : IActivitiesRepository
     {
         public void Add(Activity entity)
         {

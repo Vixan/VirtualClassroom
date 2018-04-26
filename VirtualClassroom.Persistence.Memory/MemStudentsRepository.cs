@@ -9,44 +9,49 @@ namespace VirtualClassroom.Persistence.Memory
     {
         List<Student> students = new List<Student>();
 
-        public void Add(Student entity)
+        public void Add(Student student)
         {
-            throw new NotImplementedException();
+            students.Add(student);
         }
 
-        public void Delete(Student entity)
+        public void Delete(Student student)
         {
-            throw new NotImplementedException();
+            students.Remove(student);
         }
 
-        public List<Activity> GetActivities()
+        public List<Activity> GetActivities(int studentIdentifier)
         {
-            throw new NotImplementedException();
+            var student = students.Find(stud => stud.Id == studentIdentifier);
+
+            return new List<Activity>(student.Activities);
         }
 
         public IEnumerable<Student> GetAll()
         {
-            throw new NotImplementedException();
+            return students;
         }
 
         public Student GetByEmail(string email)
         {
-            throw new NotImplementedException();
+            return students.Find(stud => stud.Email == email);
         }
 
         public Student GetById(int identifier)
         {
-            throw new NotImplementedException();
+            return students.Find(stud => stud.Id == identifier);
         }
 
         public Student GetByName(string name)
         {
-            throw new NotImplementedException();
+            return students.Find(stud =>
+                $"{stud.FirstName} {stud.LastName}" == name ||
+                $"{stud.LastName} {stud.FirstName}" == name
+            );
         }
 
         public void Save()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

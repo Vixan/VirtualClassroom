@@ -15,6 +15,27 @@ namespace VirtualClassroom.Core
             this.persistanceContext = persistanceContext;
         }
 
+        public Professor GetProfessor(int professorIdentifier)
+        {
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+
+            return professorRepository.GetById(professorIdentifier);
+        }
+
+        public void AddProfessor(Professor professor)
+        {
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+
+            professorRepository.Add(professor);
+        }
+
+        public void DeleteProfessor(Professor professor)
+        {
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+
+            professorRepository.Delete(professor);
+        }
+
         public bool CreateActivity(int professorIdentifier, Activity activity)
         {
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();

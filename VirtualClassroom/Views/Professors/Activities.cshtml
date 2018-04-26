@@ -1,0 +1,33 @@
+﻿@model VirtualClassroom.Domain.Professor
+
+@{
+    ViewData["Title"] = "Activities";
+}
+
+<h2>Your Activities</h2>
+
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var activity in @Model.Activities)
+                {
+                    <tr>
+                        <td class="col-md-2">
+                            <a href="/Activities/@activity.Id">@activity.Name</a>
+                        </td>
+                        <td class="col-md-2">@activity.ActivityType.Name</td>
+                        <td class="col-md-6">@activity.Description</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

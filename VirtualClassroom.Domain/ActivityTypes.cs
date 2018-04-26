@@ -12,6 +12,6 @@ namespace VirtualClassroom.Domain
         [Required(ErrorMessage = "Activity Type is required")]
         [DataType(DataType.Text)]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be 2 to 50 characters long")]
-        public int Name { get; set; }
+        public string Name { get; set; }
     }
 }
