@@ -34,7 +34,8 @@ namespace VirtualClassroom.Authentication
         }
         #endregion
 
-        #region AccesUserData
+        #region GetUser
+
         private ApplicationUser GetUser(ClaimsPrincipal user)
         {
             Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
@@ -43,72 +44,118 @@ namespace VirtualClassroom.Authentication
             return applicationUser.Result;
         }
 
+        private ApplicationUser GetUser(UserData user)
+        {
+            throw new NotImplementedException();
+        }
+
+        private UserData MapApplicationUserToUserData(ApplicationUser applicationUser)
+        {
+            return new UserData { Id = applicationUser.Id, UserName = applicationUser.UserName, Email = applicationUser.Email, PhoneNumber = applicationUser.PhoneNumber };
+        }
+
+        public UserData GetUserById(string userId)
+        {
+            Task<ApplicationUser> applicationUser = userManager.FindByIdAsync(userId);
+            applicationUser.Wait();
+
+            return MapApplicationUserToUserData(applicationUser.Result);
+        }
+
+        public UserData GetUserByUserName(string userName)
+        {
+            Task<ApplicationUser> applicationUser = userManager.FindByNameAsync(userName);
+            applicationUser.Wait();
+
+            return MapApplicationUserToUserData(applicationUser.Result);
+        }
+
+        public UserData GetUserByEmail(string email)
+        {
+            Task<ApplicationUser> applicationUser = userManager.FindByEmailAsync(email);
+            applicationUser.Wait();
+
+            return MapApplicationUserToUserData(applicationUser.Result);
+        }
+
+        #endregion
+
+        #region AccesUserData
+
         public string GetUserId(ClaimsPrincipal user)
         {
-            Task<ApplicationUser> userData = userManager.GetUserAsync(user);
-            userData.Wait();
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
 
-            return userData.Result.Id;
+            return applicationUser.Result.Id;
         }
 
         public string GetUserName(ClaimsPrincipal user)
         {
-            Task<ApplicationUser> userData = userManager.GetUserAsync(user);
-            userData.Wait();
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
 
-            return userData.Result.UserName;
+            return applicationUser.Result.UserName;
         }
 
         public string GetUserEmail(ClaimsPrincipal user)
         {
-            Task<ApplicationUser> userData = userManager.GetUserAsync(user);
-            userData.Wait();
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
 
-            return userData.Result.Email;
+            return applicationUser.Result.Email;
         }
 
         public string GetUserPhoneNumber(ClaimsPrincipal user)
         {
-            Task<ApplicationUser> userData = userManager.GetUserAsync(user);
-            userData.Wait();
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
 
-            return userData.Result.PhoneNumber;
+            return applicationUser.Result.PhoneNumber;
         }
 
-        public bool IsUserEmailConfirmed(ClaimsPrincipal user)
-        {
-            Task<ApplicationUser> userData = userManager.GetUserAsync(user);
-            userData.Wait();
-
-            return userData.Result.EmailConfirmed;
-        }
-
-        void SetUserId(ClaimsPrincipal user, string id)
+        public void SetUserId(ClaimsPrincipal user, string id)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             applicationUser.Id = id;
         }
 
-        void SetUserName(ClaimsPrincipal user, string userName)
+        public void SetUserName(ClaimsPrincipal user, string userName)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             applicationUser.UserName = userName;
         }
 
-        void SetUserEmail(ClaimsPrincipal user, string email)
+        public void SetUserEmail(ClaimsPrincipal user, string email)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             applicationUser.Email = email;
         }
 
-        void SetUserPhoneNumber(ClaimsPrincipal user, string phoneNumber)
+        public void SetUserPhoneNumber(ClaimsPrincipal user, string phoneNumber)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             applicationUser.PhoneNumber = phoneNumber;
+        }
+
+        public bool IsUserEmailConfirmed(ClaimsPrincipal user)
+        {
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
+
+            return applicationUser.Result.EmailConfirmed;
+        }
+
+        public bool IsUserEmailConfirmed(UserData user)
+        {
+            Task<ApplicationUser> applicationUser = userManager.FindByEmailAsync(user.Email);
+            applicationUser.Wait();
+
+            return applicationUser.Result.EmailConfirmed;
         }
         #endregion
 
@@ -172,7 +219,7 @@ namespace VirtualClassroom.Authentication
             return code.Result;
         }
 
-        bool ConfirmEmail(ClaimsPrincipal user, string code)
+        public bool ConfirmEmail(ClaimsPrincipal user, string code)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -182,7 +229,18 @@ namespace VirtualClassroom.Authentication
             return result.Result.Succeeded;
         }
 
-        string GeneratePasswordResetToken(ClaimsPrincipal user)
+        public bool ConfirmEmail(string userId, string code)
+        {
+            Task<ApplicationUser> applicationUser = userManager.FindByIdAsync(userId);
+            applicationUser.Wait();
+
+            Task<IdentityResult> result = userManager.ConfirmEmailAsync(applicationUser.Result, code);
+            result.Wait();
+
+            return result.Result.Succeeded;
+        }
+
+        public string GeneratePasswordResetToken(ClaimsPrincipal user)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -192,7 +250,7 @@ namespace VirtualClassroom.Authentication
             return passwordResetToken.Result;
         }
 
-        bool ResetPassword(ClaimsPrincipal user, string code, string newPassword)
+        public bool ResetPassword(ClaimsPrincipal user, string code, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -203,7 +261,7 @@ namespace VirtualClassroom.Authentication
         }
 
 
-        bool HasPassword(ClaimsPrincipal user)
+        public bool HasPassword(ClaimsPrincipal user)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -213,7 +271,7 @@ namespace VirtualClassroom.Authentication
             return result.Result;
         }
 
-        bool ChangedPassword(ClaimsPrincipal user, string oldPassword, string newPassword)
+        public bool ChangedPassword(ClaimsPrincipal user, string oldPassword, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -225,7 +283,7 @@ namespace VirtualClassroom.Authentication
             return result.Result.Succeeded;
         }
 
-        bool AddPassword(ClaimsPrincipal user, string newPassword)
+        public bool AddPassword(ClaimsPrincipal user, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 

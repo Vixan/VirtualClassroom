@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.CommonAbstractions;
 using VirtualClassroom.Models.AccountViewModels;
 using VirtualClassroom.Services;
 
@@ -16,17 +17,20 @@ namespace VirtualClassroom.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly IAuthentication _authentication;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
+            IAuthentication authentication,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
+            _authentication = authentication;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -57,8 +61,9 @@ namespace VirtualClassroom.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                //var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                bool result = _authentication.Login(model.Email, model.Password, model.RememberMe, false);
+                if (result)
                 {
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
@@ -101,21 +106,24 @@ namespace VirtualClassroom.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                //var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                //var result = await _userManager.CreateAsync(user, model.Password);
+                bool result = _authentication.Register(model.Email, model.Password);
+                if (result)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    string code = _authentication.GenerateEmailConfirmationToken(User);
+                    //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+                    var callbackUrl = Url.EmailConfirmationLink(_authentication.GetUserId(User), code, Request.Scheme);
                     await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
-                AddErrors(result);
+                //AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
@@ -126,7 +134,8 @@ namespace VirtualClassroom.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            //await _signInManager.SignOutAsync();
+            _authentication.Logout();
             _logger.LogInformation("User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -139,13 +148,21 @@ namespace VirtualClassroom.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+
+            UserData user = _authentication.GetUserById(userId);
+            if(user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{userId}'.");
             }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            /*var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            }*/
+
+            bool result = _authentication.ConfirmEmail(userId, code);
+            //var result = await _userManager.ConfirmEmailAsync(user, code);
+            return View(result ? "ConfirmEmail" : "Error");
         }
 
         [HttpGet]
@@ -163,15 +180,21 @@ namespace VirtualClassroom.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+                //bool user = _authentication.IsUserWithEmail(model.Email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
+                /*if (user || !_authentication.IsUserEmailConfirmed(model.Email))
+                {
+                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                }*/
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                //string code = _authentication.GeneratePasswordResetToken();
                 var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
                 await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                    $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
