@@ -14,6 +14,34 @@ namespace VirtualClassroom.Core
             this.persistanceContext = persistanceContext;
         }
 
+        public Student GetStudent(int studentIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            return studentRepository.GetById(studentIdentifier);
+        }
+
+        public IEnumerable<Student> GetAllStudents()
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            return studentRepository.GetAll();
+        }
+
+        public void AddStudent(Student student)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            studentRepository.Add(student);
+        }
+
+        public void DeleteStudent(Student student)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            studentRepository.Delete(student);
+        }
+
         public IEnumerable<Activity> GetActivities(int studentIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();

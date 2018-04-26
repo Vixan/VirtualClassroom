@@ -6,66 +6,21 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
+using VirtualClassroom.Models.ProfessorViewModels;
 
 namespace VirtualClassroom.Controllers
 {
     public class ProfessorsController : Controller
     {
         IProfessorServices professorServices = null;
+        IStudentServices studentServices = null;
 
-        public ProfessorsController(IProfessorServices professorServices)
+        public ProfessorsController(IProfessorServices professorServices, IStudentServices studentServices)
         {
             this.professorServices = professorServices;
-
-            this.professorServices.AddProfessor(new Professor
-            {
-                Id = 1,
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "johndoe@gmail.com",
-                Activities = new List<Activity>
-                {
-                    new Activity
-                    {
-                        Id = 1,
-                        Name = "OOP",
-                        ActivityType = new ActivityType
-                        {
-                            Id = 1,
-                            Name = "Course"
-                        },
-                        Description = "Lorem ipsum dolor sit amet, duo ei volutpat voluptaria, his ne vero suscipiantur. Mel sapientem interesset complectitur in",
-                        OccurenceDates = new List<ActivityOccurence>
-                        {
-                            new ActivityOccurence
-                            {
-                                Id = 1,
-                                OccurenceDate = new DateTime()
-                            }
-                        }
-                    },
-                    new Activity
-                    {
-                        Id = 2,
-                        Name = "AI",
-                        ActivityType = new ActivityType
-                        {
-                            Id = 2,
-                            Name = "Laboratory"
-                        },
-                        Description = "His ne vero suscipiantur. Mel sapientem interesset complectitur in",
-                        OccurenceDates = new List<ActivityOccurence>
-                        {
-                            new ActivityOccurence
-                            {
-                                Id = 2,
-                                OccurenceDate = new DateTime()
-                            }
-                        }
-                    }
-                }
-            });
+            this.studentServices = studentServices;
         }
+
         // GET: Professors
         public ActionResult Index()
         {
@@ -73,13 +28,54 @@ namespace VirtualClassroom.Controllers
         }
 
         // GET: Professors/Activities/5
-        public ActionResult Activities(int id)
+        [Route("Professors/{professorId}/Activities")]
+        public ActionResult Activities(int professorId)
         {
-            var professor = professorServices.GetProfessor(id);
+            Professor professor = professorServices.GetProfessor(professorId);
+
             return View(professor);
         }
 
-        // GET: Professors/Details/5
+        // GET: Professors/ActivityDetails/5
+        [Route("Professors/{professorId}/Activities/{activityId}")]
+        public ActionResult ActivityDetails(int professorId, int activityId)
+        {
+            Professor professor = professorServices.GetProfessor(professorId);
+            Activity activity = professorServices.GetActivity(professorId, activityId);
+            List<Student> students = studentServices.GetAllStudents().ToList();
+            List<Student> activityStudents = new List<Student>(students.FindAll(student => student.Activities.ToList().Contains(activity)));
+
+            if (!activityStudents.Any())
+            {
+                return View(null);
+            }
+
+            ActivityDetailsVM activityDetails = new ActivityDetailsVM
+            {
+                Id = activity.Id,
+                Name = activity.Name,
+                Students = new List<ActivityStudentVM>
+                {
+                    new ActivityStudentVM
+                    {
+                        Id = activityStudents[0].Id,
+                        FirstName = activityStudents[0].FirstName,
+                        LastName = activityStudents[0].LastName,
+                        ActivityInfo = new ActivityInfoVM
+                        {
+                            Id = 1,
+                            Grade = 6,
+                            Presence = true
+                        }
+                    },
+                }
+            };
+
+            return View(activityDetails);
+        }
+
+        // GET: Professors/5/Details
+        [Route("Professors/{professorId}/Details")]
         public ActionResult Details(int id)
         {
             return View();
