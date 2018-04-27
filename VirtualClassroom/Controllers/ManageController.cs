@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Models.ManageViewModels;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
@@ -20,8 +18,6 @@ namespace VirtualClassroom.Controllers
     public class ManageController : Controller
     {
         private readonly IAuthentication _authentication;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
@@ -30,15 +26,11 @@ namespace VirtualClassroom.Controllers
 
         public ManageController(
           IAuthentication authentication,
-          UserManager<ApplicationUser> userManager,
-          SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
           UrlEncoder urlEncoder)
         {
             _authentication = authentication;
-            _userManager = userManager;
-            _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;

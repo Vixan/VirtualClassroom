@@ -385,5 +385,12 @@ namespace VirtualClassroom.Authentication
             return new AuthResult { Succeded = identityResult.Succeeded, Errors = errors };
         }
         #endregion
+
+        #region Cookie
+        public string GetExternalScheme()
+        {
+            return IdentityConstants.ExternalScheme;
+        }
+        #endregion
     }
 }

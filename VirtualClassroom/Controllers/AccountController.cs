@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
 using VirtualClassroom.Models.AccountViewModels;
@@ -18,21 +16,15 @@ namespace VirtualClassroom.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthentication _authentication;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
             IAuthentication authentication,
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
             _authentication = authentication;
-            _userManager = userManager;
-            _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
         }
@@ -45,7 +37,7 @@ namespace VirtualClassroom.Controllers
         public async Task<IActionResult> Login(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await HttpContext.SignOutAsync(_authentication.GetExternalScheme());
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();

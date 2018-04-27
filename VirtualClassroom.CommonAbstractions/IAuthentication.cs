@@ -42,5 +42,8 @@ namespace VirtualClassroom.CommonAbstractions
         bool HasPassword(ClaimsPrincipal user);
         AuthResult ChangedPassword(ClaimsPrincipal user, string oldPassword, string newPassword);
         AuthResult AddPassword(ClaimsPrincipal user, string newPassword);
+
+        // Cookie
+        string GetExternalScheme();
     }
 }
