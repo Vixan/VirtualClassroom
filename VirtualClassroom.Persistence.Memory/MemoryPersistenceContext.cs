@@ -34,23 +34,33 @@ namespace VirtualClassroom.Persistence.Memory
 
         public void InitializeData(IServiceProvider serviceProvider)
         {
+            List<ActivityType> activityTypes = new List<ActivityType>
+            {
+                new ActivityType
+                {
+                    Id = 1,
+                    Name = "Course"
+                },
+                new ActivityType
+                {
+                    Id = 2,
+                    Name = "Laboratory"
+                }
+            };
+
             List<Activity> activities = new List<Activity> {
                 new Activity
                 {
                     Id = 1,
                     Name = "OOP",
-                    ActivityType = new ActivityType
-                    {
-                        Id = 1,
-                        Name = "Course"
-                    },
+                    ActivityType = activityTypes[0],
                     Description = "Lorem ipsum dolor sit amet, duo ei volutpat voluptaria, his ne vero suscipiantur. Mel sapientem interesset complectitur in",
                     OccurenceDates = new List<ActivityOccurence>
                     {
                         new ActivityOccurence
                         {
                             Id = 1,
-                            OccurenceDate = new DateTime()
+                            OccurenceDate = DateTime.Now
                         }
                     }
                 },
@@ -58,22 +68,21 @@ namespace VirtualClassroom.Persistence.Memory
                 {
                     Id = 2,
                     Name = "AI",
-                    ActivityType = new ActivityType
-                    {
-                        Id = 2,
-                        Name = "Laboratory"
-                    },
+                    ActivityType = activityTypes[1],
                     Description = "His ne vero suscipiantur. Mel sapientem interesset complectitur in",
                     OccurenceDates = new List<ActivityOccurence>
                     {
                         new ActivityOccurence
                         {
                             Id = 2,
-                            OccurenceDate = new DateTime()
+                            OccurenceDate = DateTime.Now.AddDays(-1).AddHours(-5).AddMinutes(-1)
                         }
                     }
                 }
             };
+
+            activitiesRepository.Add(activities[0]);
+            activitiesRepository.Add(activities[1]);
 
             professorsRepository.Add(new Professor
             {

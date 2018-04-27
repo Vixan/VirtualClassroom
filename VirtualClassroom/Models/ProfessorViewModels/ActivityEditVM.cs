@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Models.ProfessorViewModels
 {
@@ -21,9 +22,13 @@ namespace VirtualClassroom.Models.ProfessorViewModels
         [StringLength(100, MinimumLength = 2)]
         public string Description { get; set; }
 
+        [Display(Name = "Occurence")]
         public ICollection<DateTime> OccurenceDates { get; set; }
 
         [ForeignKey("ActivityType")]
+        [Display(Name="Activity Type")]
         public int ActivityTypeId { get; set; }
+
+        public ICollection<ActivityType> ActivityTypes { get; set; }
     }
 }

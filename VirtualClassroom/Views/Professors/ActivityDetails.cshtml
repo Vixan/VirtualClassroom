@@ -20,11 +20,11 @@
                     @foreach (var student in @Model.Students)
                 {
                         <tr>
-                            <td class="col-md-4">
+                            <td class="col-md-3">
                                 <a href="/Students/@student.Id">@student.FirstName @student.LastName</a>
                             </td>
-                            <td class="col-md-4">@student.ActivityInfo.Presence</td>
-                            <td class="col-md-4">@student.ActivityInfo.Grade</td>
+                            <td class="col-md-3">@student.ActivityInfo.Presence</td>
+                            <td class="col-md-3">@student.ActivityInfo.Grade</td>
                         </tr>
                     }
                 </tbody>

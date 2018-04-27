@@ -22,6 +22,13 @@ namespace VirtualClassroom.Core
             return professorRepository.GetById(professorIdentifier);
         }
 
+        public IEnumerable<Professor> GetAllProfessors()
+        {
+            IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
+
+            return professorRepository.GetAll();
+        }
+
         public void AddProfessor(Professor professor)
         {
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();

@@ -36,7 +36,7 @@ namespace VirtualClassroom.Controllers
             return View(professor);
         }
 
-        // GET: Professors/ActivityDetails/5
+        // GET: Professors/5/Activities/1
         [Route("Professors/{professorId}/Activities/{activityId}")]
         public ActionResult ActivityDetails(int professorId, int activityId)
         {
@@ -72,6 +72,29 @@ namespace VirtualClassroom.Controllers
             };
 
             return View(activityDetails);
+        }
+
+        // GET: Professors/5/Activities/1/Edit
+        [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
+        public ActionResult ActivityEdit(int professorId, int activityId)
+        {
+            Professor professor = professorServices.GetProfessor(professorId);
+            Activity activity = professorServices.GetActivity(professorId, activityId);
+            List<Professor> allProfessors = professorServices.GetAllProfessors().ToList();
+            List<Activity> allActivities = allProfessors.SelectMany(prof => prof.Activities).ToList();
+            List<ActivityType> allActivityTypes = allActivities.Select(act => act.ActivityType).ToList();
+
+            ActivityEditVM activityEdit = new ActivityEditVM
+            {
+                Id = activity.Id,
+                Name = activity.Name,
+                Description = activity.Description,
+                ActivityTypeId = activity.ActivityType.Id,
+                OccurenceDates = activity.OccurenceDates.Select(occurenceDate => occurenceDate.OccurenceDate).ToList(),
+                ActivityTypes = allActivityTypes
+            };
+
+            return View(activityEdit);
         }
 
         // GET: Professors/5/Details

@@ -6,6 +6,7 @@ namespace VirtualClassroom.Core.Shared
     public interface IProfessorServices
     {
         Professor GetProfessor(int professorId);
+        IEnumerable<Professor> GetAllProfessors();
         void AddProfessor(Professor professor);
         void DeleteProfessor(Professor professor);
         bool CreateActivity(int professorId, Activity activity);
