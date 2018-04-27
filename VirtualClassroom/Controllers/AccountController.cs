@@ -54,7 +54,7 @@ namespace VirtualClassroom.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public IActionResult Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -108,22 +108,23 @@ namespace VirtualClassroom.Controllers
             {
                 //var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 //var result = await _userManager.CreateAsync(user, model.Password);
-                bool result = _authentication.Register(model.Email, model.Password);
-                if (result)
+                UserData user = new UserData { UserName = model.Email, Email = model.Email };
+                AuthResult result = _authentication.Register(model.Email, model.Password);
+                if (result.Succeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    string code = _authentication.GenerateEmailConfirmationToken(User);
+                    string code = _authentication.GenerateEmailConfirmationToken(user);
                     //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    var callbackUrl = Url.EmailConfirmationLink(_authentication.GetUserId(User), code, Request.Scheme);
+                    var callbackUrl = Url.EmailConfirmationLink(_authentication.GetUserByEmail(user.Email).Id, code, Request.Scheme);
                     await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
 
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
-                //AddErrors(result);
+                AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
@@ -132,7 +133,7 @@ namespace VirtualClassroom.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
             //await _signInManager.SignOutAsync();
             _authentication.Logout();
@@ -142,7 +143,7 @@ namespace VirtualClassroom.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public IActionResult ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
@@ -150,7 +151,7 @@ namespace VirtualClassroom.Controllers
             }
 
             UserData user = _authentication.GetUserById(userId);
-            if(user == null)
+            if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{userId}'.");
             }
@@ -160,9 +161,9 @@ namespace VirtualClassroom.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{userId}'.");
             }*/
 
-            bool result = _authentication.ConfirmEmail(userId, code);
+            AuthResult result = _authentication.ConfirmEmail(userId, code);
             //var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result ? "ConfirmEmail" : "Error");
+            return View(result.Succeded ? "ConfirmEmail" : "Error");
         }
 
         [HttpGet]
@@ -179,22 +180,22 @@ namespace VirtualClassroom.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                //bool user = _authentication.IsUserWithEmail(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                //var user = await _userManager.FindByEmailAsync(model.Email);
+                UserData user = _authentication.GetUserByEmail(model.Email);
+                /*if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToAction(nameof(ForgotPasswordConfirmation));
-                }
-                /*if (user || !_authentication.IsUserEmailConfirmed(model.Email))
+                }*/
+                if (user == null || !_authentication.IsUserEmailConfirmed(user))
                 {
                     return RedirectToAction(nameof(ForgotPasswordConfirmation));
-                }*/
+                }
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //string code = _authentication.GeneratePasswordResetToken();
+                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                string code = _authentication.GeneratePasswordResetToken(user);
                 var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
                 await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                    $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
@@ -227,20 +228,22 @@ namespace VirtualClassroom.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            //var user = await _userManager.FindByEmailAsync(model.Email);
+            UserData user = _authentication.GetUserByEmail(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
+            //var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            AuthResult result = _authentication.ResetPassword(user, model.Code, model.Password);
+            if (result.Succeded)
             {
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
@@ -264,11 +267,18 @@ namespace VirtualClassroom.Controllers
 
         #region Helpers
 
-        private void AddErrors(IdentityResult result)
+        /*private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }*/
+        private void AddErrors(AuthResult results)
+        {
+            foreach(var error in results.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
             }
         }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VirtualClassroom.Authentication;
 using VirtualClassroom.Authentication.Models.ManageViewModels;
 using VirtualClassroom.Authentication.Services;
+using VirtualClassroom.CommonAbstractions;
 using VirtualClassroom.Models.ManageViewModels;
 using VirtualClassroom.Services;
 
@@ -18,6 +19,7 @@ namespace VirtualClassroom.Controllers
     [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
+        private readonly IAuthentication _authentication;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -27,12 +29,14 @@ namespace VirtualClassroom.Controllers
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
+          IAuthentication authentication,
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
           UrlEncoder urlEncoder)
         {
+            _authentication = authentication;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -44,12 +48,14 @@ namespace VirtualClassroom.Controllers
         public string StatusMessage { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
             var model = new IndexViewModel
@@ -57,7 +63,7 @@ namespace VirtualClassroom.Controllers
                 Username = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                IsEmailConfirmed = user.EmailConfirmed,
+                IsEmailConfirmed = _authentication.IsUserEmailConfirmed(user),
                 StatusMessage = StatusMessage
             };
 
@@ -66,24 +72,27 @@ namespace VirtualClassroom.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel model)
+        public IActionResult Index(IndexViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
             var email = user.Email;
             if (model.Email != email)
             {
-                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
-                if (!setEmailResult.Succeeded)
+                //var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
+                AuthResult setEmailResult = _authentication.SetUserEmail(User, model.Email);
+                if (!setEmailResult.Succeded)
                 {
                     throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                 }
@@ -92,8 +101,9 @@ namespace VirtualClassroom.Controllers
             var phoneNumber = user.PhoneNumber;
             if (model.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                //var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
+                AuthResult setPhoneResult = _authentication.SetUserPhoneNumber(User, model.PhoneNumber);
+                if (!setPhoneResult.Succeded)
                 {
                     throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.Id}'.");
                 }
@@ -112,13 +122,16 @@ namespace VirtualClassroom.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string code = _authentication.GenerateEmailConfirmationToken(user);
             var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
             var email = user.Email;
             await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
@@ -128,15 +141,18 @@ namespace VirtualClassroom.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangePassword()
+        public IActionResult ChangePassword()
         {
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            //var hasPassword = await _userManager.HasPasswordAsync(user);
+            bool hasPassword = _authentication.HasPassword(User);
             if (!hasPassword)
             {
                 return RedirectToAction(nameof(SetPassword));
@@ -148,27 +164,30 @@ namespace VirtualClassroom.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (!changePasswordResult.Succeeded)
+            //var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            AuthResult changePasswordResult = _authentication.ChangedPassword(User, model.OldPassword, model.NewPassword);
+            if (!changePasswordResult.Succeded)
             {
                 AddErrors(changePasswordResult);
                 return View(model);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            //await _signInManager.SignInAsync(user, isPersistent: false);
             _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Your password has been changed.";
 
@@ -176,15 +195,18 @@ namespace VirtualClassroom.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SetPassword()
+        public IActionResult SetPassword()
         {
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
-            var hasPassword = await _userManager.HasPasswordAsync(user);
+            //var hasPassword = await _userManager.HasPasswordAsync(user);
+            bool hasPassword = _authentication.HasPassword(User);
 
             if (hasPassword)
             {
@@ -197,27 +219,30 @@ namespace VirtualClassroom.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SetPassword(SetPasswordViewModel model)
+        public IActionResult SetPassword(SetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            //var user = await _userManager.GetUserAsync(User);
+            UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
-            var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
-            if (!addPasswordResult.Succeeded)
+            //var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+            AuthResult addPasswordResult = _authentication.AddPassword(User, model.NewPassword);
+            if (!addPasswordResult.Succeded)
             {
                 AddErrors(addPasswordResult);
                 return View(model);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            //await _signInManager.SignInAsync(user, isPersistent: false);
             StatusMessage = "Your password has been set.";
 
             return RedirectToAction(nameof(SetPassword));
@@ -225,11 +250,18 @@ namespace VirtualClassroom.Controllers
 
         #region Helpers
 
-        private void AddErrors(IdentityResult result)
+        /*private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }*/
+        private void AddErrors(AuthResult results)
+        {
+            foreach (var error in results.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
             }
         }
 

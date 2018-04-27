@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using VirtualClassroom.Authentication.Data;
 using VirtualClassroom.CommonAbstractions;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace VirtualClassroom.Authentication
 {
     public class AuthenticationInitializer : IAuthentication
     {
-        private UserManager<ApplicationUser> userManager;
-        private SignInManager<ApplicationUser> signInManager;
+        private static UserManager<ApplicationUser> userManager = null;
+        private static SignInManager<ApplicationUser> signInManager = null;
 
         #region IInitializer
         public void InitializeContext(IServiceCollection services, IConfiguration configuration)
@@ -46,12 +47,25 @@ namespace VirtualClassroom.Authentication
 
         private ApplicationUser GetUser(UserData user)
         {
-            throw new NotImplementedException();
+            Task<ApplicationUser> applicationUser = null;
+
+            if (user.Id != null)
+                applicationUser = userManager.FindByIdAsync(user.Id);
+            else if (user.UserName != null)
+                applicationUser = userManager.FindByNameAsync(user.UserName);
+            else if (user.Email != null)
+                applicationUser = userManager.FindByEmailAsync(user.Email);
+
+            applicationUser.Wait();
+            return applicationUser.Result;
         }
 
-        private UserData MapApplicationUserToUserData(ApplicationUser applicationUser)
+        public UserData GetUserByAssociatedUser(ClaimsPrincipal user)
         {
-            return new UserData { Id = applicationUser.Id, UserName = applicationUser.UserName, Email = applicationUser.Email, PhoneNumber = applicationUser.PhoneNumber };
+            Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
+            applicationUser.Wait();
+
+            return MapApplicationUserToUserData(applicationUser.Result);
         }
 
         public UserData GetUserById(string userId)
@@ -114,32 +128,45 @@ namespace VirtualClassroom.Authentication
             return applicationUser.Result.PhoneNumber;
         }
 
-        public void SetUserId(ClaimsPrincipal user, string id)
+        public AuthResult SetUserId(ClaimsPrincipal user, string id)
         {
             ApplicationUser applicationUser = GetUser(user);
-
             applicationUser.Id = id;
+
+            Task<IdentityResult> updateUser = userManager.UpdateAsync(applicationUser);
+            updateUser.Wait();
+
+            return MapIdentityResultToAuth(updateUser.Result);
         }
 
-        public void SetUserName(ClaimsPrincipal user, string userName)
+        public AuthResult SetUserName(ClaimsPrincipal user, string userName)
         {
             ApplicationUser applicationUser = GetUser(user);
 
-            applicationUser.UserName = userName;
+            Task<IdentityResult> setUserNameResult = userManager.SetUserNameAsync(applicationUser, userName);
+            setUserNameResult.Wait();
+
+            return MapIdentityResultToAuth(setUserNameResult.Result);
         }
 
-        public void SetUserEmail(ClaimsPrincipal user, string email)
+        public AuthResult SetUserEmail(ClaimsPrincipal user, string email)
         {
             ApplicationUser applicationUser = GetUser(user);
 
-            applicationUser.Email = email;
+            Task<IdentityResult> setUserEmailResult = userManager.SetEmailAsync(applicationUser, email);
+            setUserEmailResult.Wait();
+
+            return MapIdentityResultToAuth(setUserEmailResult.Result);
         }
 
-        public void SetUserPhoneNumber(ClaimsPrincipal user, string phoneNumber)
+        public AuthResult SetUserPhoneNumber(ClaimsPrincipal user, string phoneNumber)
         {
             ApplicationUser applicationUser = GetUser(user);
 
-            applicationUser.PhoneNumber = phoneNumber;
+            Task<IdentityResult> setUserPhoneResult = userManager.SetPhoneNumberAsync(applicationUser, phoneNumber);
+            setUserPhoneResult.Wait();
+
+            return MapIdentityResultToAuth(setUserPhoneResult.Result);
         }
 
         public bool IsUserEmailConfirmed(ClaimsPrincipal user)
@@ -192,7 +219,7 @@ namespace VirtualClassroom.Authentication
             return signInResult.Result.Succeeded;
         }
 
-        public bool Register(string email, string password)
+        public AuthResult Register(string email, string password)
         {
             ApplicationUser newUser = new ApplicationUser { UserName = email, Email = email };
             Task<IdentityResult> identityResult = userManager.CreateAsync(newUser, password);
@@ -200,7 +227,7 @@ namespace VirtualClassroom.Authentication
 
             signInManager.SignInAsync(newUser, isPersistent: false).Wait();
 
-            return identityResult.Result.Succeeded;
+            return MapIdentityResultToAuth(identityResult.Result);
         }
 
         public void Logout()
@@ -209,7 +236,7 @@ namespace VirtualClassroom.Authentication
         }
 
 
-        public string GenerateEmailConfirmationToken(ClaimsPrincipal user)
+        public string GenerateEmailConfirmationToken(UserData user)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -219,17 +246,17 @@ namespace VirtualClassroom.Authentication
             return code.Result;
         }
 
-        public bool ConfirmEmail(ClaimsPrincipal user, string code)
+        public AuthResult ConfirmEmail(ClaimsPrincipal user, string code)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             Task<IdentityResult> result = userManager.ConfirmEmailAsync(applicationUser, code);
             result.Wait();
 
-            return result.Result.Succeeded;
+            return MapIdentityResultToAuth(result.Result);
         }
 
-        public bool ConfirmEmail(string userId, string code)
+        public AuthResult ConfirmEmail(string userId, string code)
         {
             Task<ApplicationUser> applicationUser = userManager.FindByIdAsync(userId);
             applicationUser.Wait();
@@ -237,10 +264,10 @@ namespace VirtualClassroom.Authentication
             Task<IdentityResult> result = userManager.ConfirmEmailAsync(applicationUser.Result, code);
             result.Wait();
 
-            return result.Result.Succeeded;
+            return MapIdentityResultToAuth(result.Result);
         }
 
-        public string GeneratePasswordResetToken(ClaimsPrincipal user)
+        public string GeneratePasswordResetToken(UserData user)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -250,14 +277,14 @@ namespace VirtualClassroom.Authentication
             return passwordResetToken.Result;
         }
 
-        public bool ResetPassword(ClaimsPrincipal user, string code, string newPassword)
+        public AuthResult ResetPassword(UserData user, string code, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 
             Task<IdentityResult> result = userManager.ResetPasswordAsync(applicationUser, code, newPassword);
             result.Wait();
 
-            return result.Result.Succeeded;
+            return MapIdentityResultToAuth(result.Result);
         }
 
 
@@ -271,7 +298,7 @@ namespace VirtualClassroom.Authentication
             return result.Result;
         }
 
-        public bool ChangedPassword(ClaimsPrincipal user, string oldPassword, string newPassword)
+        public AuthResult ChangedPassword(ClaimsPrincipal user, string oldPassword, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -280,10 +307,10 @@ namespace VirtualClassroom.Authentication
 
             signInManager.SignInAsync(applicationUser, isPersistent: false).Wait();
 
-            return result.Result.Succeeded;
+            return MapIdentityResultToAuth(result.Result);
         }
 
-        public bool AddPassword(ClaimsPrincipal user, string newPassword)
+        public AuthResult AddPassword(ClaimsPrincipal user, string newPassword)
         {
             ApplicationUser applicationUser = GetUser(user);
 
@@ -292,7 +319,7 @@ namespace VirtualClassroom.Authentication
 
             signInManager.SignInAsync(applicationUser, isPersistent: false).Wait();
 
-            return result.Result.Succeeded;
+            return MapIdentityResultToAuth(result.Result);
         }
         #endregion
 
@@ -338,6 +365,24 @@ namespace VirtualClassroom.Authentication
                 roleResult = roleManager.CreateAsync(studentRole);
                 roleResult.Wait();
             }
+        }
+        #endregion
+
+        #region Helpers
+        private UserData MapApplicationUserToUserData(ApplicationUser applicationUser)
+        {
+            return new UserData { Id = applicationUser.Id, UserName = applicationUser.UserName, Email = applicationUser.Email, PhoneNumber = applicationUser.PhoneNumber };
+        }
+
+        private AuthResult MapIdentityResultToAuth(IdentityResult identityResult)
+        {
+            List<string> errors = new List<string>();
+            foreach(var error in identityResult.Errors)
+            {
+                errors.Add(error.Description);
+            }
+
+            return new AuthResult { Succeded = identityResult.Succeeded, Errors = errors };
         }
         #endregion
     }
