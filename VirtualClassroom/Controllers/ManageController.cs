@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using VirtualClassroom.Authentication.Models.ManageViewModels;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
 using VirtualClassroom.Models.ManageViewModels;
@@ -42,11 +41,9 @@ namespace VirtualClassroom.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            //var user = await _userManager.GetUserAsync(User);
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
@@ -56,6 +53,7 @@ namespace VirtualClassroom.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = _authentication.IsUserEmailConfirmed(user),
+                Roles = _authentication.GetUserRoles(User),
                 StatusMessage = StatusMessage
             };
 
@@ -71,18 +69,15 @@ namespace VirtualClassroom.Controllers
                 return View(model);
             }
 
-            //var user = await _userManager.GetUserAsync(User);
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
 
             var email = user.Email;
             if (model.Email != email)
             {
-                //var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
                 AuthResult setEmailResult = _authentication.SetUserEmail(User, model.Email);
                 if (!setEmailResult.Succeded)
                 {
@@ -93,7 +88,6 @@ namespace VirtualClassroom.Controllers
             var phoneNumber = user.PhoneNumber;
             if (model.PhoneNumber != phoneNumber)
             {
-                //var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 AuthResult setPhoneResult = _authentication.SetUserPhoneNumber(User, model.PhoneNumber);
                 if (!setPhoneResult.Succeded)
                 {
@@ -113,16 +107,13 @@ namespace VirtualClassroom.Controllers
             {
                 return View(model);
             }
-
-            //var user = await _userManager.GetUserAsync(User);
+            
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
-
-            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            
             string code = _authentication.GenerateEmailConfirmationToken(user);
             var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
             var email = user.Email;
@@ -135,15 +126,12 @@ namespace VirtualClassroom.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
-            //var user = await _userManager.GetUserAsync(User);
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
-
-            //var hasPassword = await _userManager.HasPasswordAsync(user);
+            
             bool hasPassword = _authentication.HasPassword(User);
             if (!hasPassword)
             {
@@ -163,23 +151,19 @@ namespace VirtualClassroom.Controllers
                 return View(model);
             }
 
-            //var user = await _userManager.GetUserAsync(User);
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
-
-            //var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            
             AuthResult changePasswordResult = _authentication.ChangedPassword(User, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeded)
             {
                 AddErrors(changePasswordResult);
                 return View(model);
             }
-
-            //await _signInManager.SignInAsync(user, isPersistent: false);
+            
             _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Your password has been changed.";
 
@@ -189,15 +173,12 @@ namespace VirtualClassroom.Controllers
         [HttpGet]
         public IActionResult SetPassword()
         {
-            //var user = await _userManager.GetUserAsync(User);
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
-
-            //var hasPassword = await _userManager.HasPasswordAsync(user);
+            
             bool hasPassword = _authentication.HasPassword(User);
 
             if (hasPassword)
@@ -217,38 +198,27 @@ namespace VirtualClassroom.Controllers
             {
                 return View(model);
             }
-
-            //var user = await _userManager.GetUserAsync(User);
+            
             UserData user = _authentication.GetUserByAssociatedUser(User);
             if (user == null)
             {
-                //throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
                 throw new ApplicationException($"Unable to load user with ID '{_authentication.GetUserId(User)}'.");
             }
-
-            //var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+            
             AuthResult addPasswordResult = _authentication.AddPassword(User, model.NewPassword);
             if (!addPasswordResult.Succeded)
             {
                 AddErrors(addPasswordResult);
                 return View(model);
             }
-
-            //await _signInManager.SignInAsync(user, isPersistent: false);
+            
             StatusMessage = "Your password has been set.";
 
             return RedirectToAction(nameof(SetPassword));
         }
 
         #region Helpers
-
-        /*private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }*/
+        
         private void AddErrors(AuthResult results)
         {
             foreach (var error in results.Errors)
@@ -283,249 +253,6 @@ namespace VirtualClassroom.Controllers
                 unformattedKey);
         }
 
-        #endregion
-
-        #region Unused
-        /*
-        [HttpGet]
-        public async Task<IActionResult> TwoFactorAuthentication()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var model = new TwoFactorAuthenticationViewModel
-            {
-                HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
-                Is2faEnabled = user.TwoFactorEnabled,
-                RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            };
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Disable2faWarning()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!user.TwoFactorEnabled)
-            {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
-            }
-
-            return View(nameof(Disable2fa));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Disable2fa()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
-            if (!disable2faResult.Succeeded)
-            {
-                throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
-            }
-
-            _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
-            return RedirectToAction(nameof(TwoFactorAuthentication));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ExternalLogins()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
-            model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
-                .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
-                .ToList();
-            model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
-            model.StatusMessage = StatusMessage;
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LinkLogin(string provider)
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action(nameof(LinkLoginCallback));
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
-            return new ChallengeResult(provider, properties);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> LinkLoginCallback()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
-            if (info == null)
-            {
-                throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
-            }
-
-            var result = await _userManager.AddLoginAsync(user, info);
-            if (!result.Succeeded)
-            {
-                throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.Id}'.");
-            }
-
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            StatusMessage = "The external login was added.";
-            return RedirectToAction(nameof(ExternalLogins));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
-            if (!result.Succeeded)
-            {
-                throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
-            }
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            StatusMessage = "The external login was removed.";
-            return RedirectToAction(nameof(ExternalLogins));
-        }
-        
-        [HttpGet]
-        public async Task<IActionResult> EnableAuthenticator()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            if (string.IsNullOrEmpty(unformattedKey))
-            {
-                await _userManager.ResetAuthenticatorKeyAsync(user);
-                unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
-            }
-
-            var model = new EnableAuthenticatorViewModel
-            {
-                SharedKey = FormatKey(unformattedKey),
-                AuthenticatorUri = GenerateQrCodeUri(user.Email, unformattedKey)
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EnableAuthenticator(EnableAuthenticatorViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            // Strip spaces and hypens
-            var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
-
-            var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
-
-            if (!is2faTokenValid)
-            {
-                ModelState.AddModelError("model.Code", "Verification code is invalid.");
-                return View(model);
-            }
-
-            await _userManager.SetTwoFactorEnabledAsync(user, true);
-            _logger.LogInformation("User with ID {UserId} has enabled 2FA with an authenticator app.", user.Id);
-            return RedirectToAction(nameof(GenerateRecoveryCodes));
-        }
-
-        [HttpGet]
-        public IActionResult ResetAuthenticatorWarning()
-        {
-            return View(nameof(ResetAuthenticator));
-        }
-        
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetAuthenticator()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            await _userManager.SetTwoFactorEnabledAsync(user, false);
-            await _userManager.ResetAuthenticatorKeyAsync(user);
-            _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
-
-            return RedirectToAction(nameof(EnableAuthenticator));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GenerateRecoveryCodes()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!user.TwoFactorEnabled)
-            {
-                throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' as they do not have 2FA enabled.");
-            }
-
-            var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-            var model = new GenerateRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
-
-            _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
-
-            return View(model);
-        }
-        */
         #endregion
     }
 }

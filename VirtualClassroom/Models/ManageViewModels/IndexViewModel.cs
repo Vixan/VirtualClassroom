@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VirtualClassroom.Models.ManageViewModels
 {
@@ -15,6 +16,8 @@ namespace VirtualClassroom.Models.ManageViewModels
         [Phone]
         [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
+
+        public IEnumerable<string> Roles { get; set; }
 
         public string StatusMessage { get; set; }
     }

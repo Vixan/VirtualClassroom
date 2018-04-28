@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace VirtualClassroom.CommonAbstractions
 {
@@ -25,12 +26,14 @@ namespace VirtualClassroom.CommonAbstractions
         bool IsUserEmailConfirmed(UserData user);
 
         // VerifyUserRoles
+        IEnumerable<string> GetRoles();
+        IEnumerable<string> GetUserRoles(ClaimsPrincipal user);
         bool IsProfessor(ClaimsPrincipal user);
         bool IsStudent(ClaimsPrincipal user);
 
         // AuthenticationMethods
-        bool Login(string email, string password, bool rememberMe, bool lockoutOnFailure);
-        AuthResult Register(string email, string password);
+        bool Login(string username, string password, bool rememberMe, bool lockoutOnFailure);
+        AuthResult Register(string username, string email, string password, string role);
         void Logout();
 
         string GenerateEmailConfirmationToken(UserData user);

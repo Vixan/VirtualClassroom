@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace VirtualClassroom.Authentication.Models.ManageViewModels
+namespace VirtualClassroom.Models.ManageViewModels
 {
     public class EnableAuthenticatorViewModel
     {

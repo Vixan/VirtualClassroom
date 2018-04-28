@@ -15,6 +15,7 @@ namespace VirtualClassroom.Authentication
     {
         private static UserManager<ApplicationUser> userManager = null;
         private static SignInManager<ApplicationUser> signInManager = null;
+        private static RoleManager<IdentityRole> roleManager = null;
 
         #region IInitializer
         public void InitializeContext(IServiceCollection services, IConfiguration configuration)
@@ -224,6 +225,36 @@ namespace VirtualClassroom.Authentication
         #endregion
 
         #region VerifyUserRoles
+
+        public IEnumerable<string> GetRoles()
+        {
+            var roles = roleManager.Roles;
+            List<string> roleList = new List<string>();
+
+            foreach(var role in roles)
+                roleList.Add(role.Name);
+
+            return roleList;
+        }
+
+        public IEnumerable<string> GetUserRoles(ClaimsPrincipal user)
+        {
+            List<string> userRoles = new List<string>();
+
+            if (user == null)
+                return userRoles;
+
+            var getRolesTask = userManager.GetRolesAsync(GetUser(user));
+            getRolesTask.Wait();
+
+            if(getRolesTask != null)
+            {
+                userRoles = (List<string>)getRolesTask.Result;
+            }
+
+            return userRoles;
+        }
+
         public bool IsProfessor(ClaimsPrincipal user)
         {
             Task<ApplicationUser> applicationUser = userManager.GetUserAsync(user);
@@ -254,26 +285,27 @@ namespace VirtualClassroom.Authentication
         #endregion
 
         #region AuthenticationMethods
-        public bool Login(string email, string password, bool rememberMe = false, bool lockoutOnFailure = false)
+        public bool Login(string username, string password, bool rememberMe = false, bool lockoutOnFailure = false)
         {
-            if (email == null || password == null)
+            if (username == null || password == null)
                 return false;
 
-            Task<SignInResult> signInResult = signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure);
+            Task<SignInResult> signInResult = signInManager.PasswordSignInAsync(username, password, rememberMe, lockoutOnFailure);
             signInResult.Wait();
 
             return signInResult.Result.Succeeded;
         }
 
-        public AuthResult Register(string email, string password)
+        public AuthResult Register(string username, string email, string password, string role)
         {
-            if (email == null || password == null)
+            if (username == null || password == null)
                 return new AuthResult { Succeded = false };
 
-            ApplicationUser newUser = new ApplicationUser { UserName = email, Email = email };
+            ApplicationUser newUser = new ApplicationUser { UserName = username, Email = email };
             Task<IdentityResult> identityResult = userManager.CreateAsync(newUser, password);
             identityResult.Wait();
 
+            userManager.AddToRoleAsync(newUser, role).Wait();
             signInManager.SignInAsync(newUser, isPersistent: false).Wait();
 
             return MapIdentityResultToAuth(identityResult.Result);
@@ -404,6 +436,9 @@ namespace VirtualClassroom.Authentication
 
             if (signInManager == null)
                 signInManager = serviceProvider.GetService<SignInManager<ApplicationUser>>();
+
+            if (roleManager == null)
+                roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
         }
 
         private void CreateRoles(IServiceProvider serviceProvider)
