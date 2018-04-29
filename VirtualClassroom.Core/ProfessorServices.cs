@@ -6,7 +6,7 @@ using VirtualClassroom.Persistence;
 
 namespace VirtualClassroom.Core
 {
-  public  class ProfessorServices : IProfessorServices
+    public class ProfessorServices : IProfessorServices
     {
         private readonly IPersistanceContext persistanceContext;
 
@@ -32,14 +32,12 @@ namespace VirtualClassroom.Core
         public void AddProfessor(Professor professor)
         {
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
-
             professorRepository.Add(professor);
         }
 
         public void DeleteProfessor(Professor professor)
         {
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
-
             professorRepository.Delete(professor);
         }
 
@@ -60,15 +58,15 @@ namespace VirtualClassroom.Core
             Professor professor = professorRepository.GetById(professorIdentifier);
 
             Activity activityToEdit = null;
-            foreach(var professorActivity in professor.Activities)
+            foreach (var professorActivity in professor.Activities)
             {
-                if(professorActivity.Id == activity.Id)
+                if (professorActivity.Id == activity.Id)
                 {
                     activityToEdit = professorActivity;
                     break;
                 }
             }
-            
+
             if (activityToEdit == null)
                 return false;
 
@@ -107,7 +105,7 @@ namespace VirtualClassroom.Core
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
             Professor professor = professorRepository.GetById(professorIdentifier);
 
-            foreach(var professorActivity in professor.Activities)
+            foreach (var professorActivity in professor.Activities)
             {
                 if (professorActivity.Id == activityIdentifier)
                     return professorActivity;

@@ -1,0 +1,83 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using VirtualClassroom.Core.Shared;
+using VirtualClassroom.Domain;
+using VirtualClassroom.Persistence;
+
+namespace VirtualClassroom.Core
+{
+    public class ActivityServices : IActivityServices
+    {
+        private readonly IPersistanceContext persistanceContext;
+
+        public ActivityServices(IPersistanceContext persistanceContext)
+        {
+            this.persistanceContext = persistanceContext;
+        }
+
+        public Activity GetActivity(int activityId)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+
+            return activitiesRepository.GetById(activityId);
+        }
+
+        public void AddActivity(Activity activity)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            activitiesRepository.Add(activity);
+
+        }
+
+        public void DeleteActivity(Activity activity)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            activitiesRepository.Delete(activity);
+        }
+
+        public void EditActivity(Activity activity)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            List<Activity> activities = new List<Activity>(activitiesRepository.GetAll());
+
+            var activityToEdit = activities.Where(act => act.Id == activity.Id).FirstOrDefault();
+
+            if (activityToEdit != null)
+            {
+                activityToEdit.Name = activity.Name;
+                activityToEdit.Description = activity.Description;
+                activityToEdit.ActivityType = activity.ActivityType;
+                activityToEdit.OccurenceDates = activity.OccurenceDates;
+
+                activitiesRepository.Save();
+            }
+        }
+
+        public IEnumerable<Activity> GetAllActivities()
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            return activitiesRepository.GetAll();
+        }
+
+        public ActivityType GetActivityType(int activityId)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            return activitiesRepository.GetById(activityId).ActivityType;
+        }
+
+        public IEnumerable<ActivityType> GetAllActivityTypes()
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            return activitiesRepository.GetAll().Select(act => act.ActivityType).ToList();
+        }
+
+        public IEnumerable<ActivityOccurence> GetActivityOccurences(int activityIdentifier)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            Activity activity = activitiesRepository.GetById(activityIdentifier);
+
+            return activity.OccurenceDates;
+        }
+    }
+}

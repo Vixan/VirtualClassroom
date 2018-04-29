@@ -7,10 +7,11 @@
 <h2>Edit Activity @Model.Name</h2>
 
 <div class="row">
-    <form>
+    <form method="post">
         <div class="col-sm-6">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
+                <input hidden asp-for="Id" />
                 <label asp-for="Name"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
@@ -25,17 +26,17 @@
                 <select asp-for="ActivityTypeId" class="form-control" id="activity-types">
                     @foreach (var activityType in Model.ActivityTypes)
                     {
-                        <option value="@activityType.Id" selected="@activityType.Id == ActivityTypeId">@activityType.Name</option>
+                        <option value="@activityType.Id" selected="@activityType.Id == ActivityTypeId ? 'selected' : ''">@activityType.Name</option>
                     }
                 </select>
                 <span asp-validation-for="ActivityTypeId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="OccurenceDates"></label>
-                <select asp-for="OccurenceDates" class="form-control" id="activity-occurence">
+                <select asp-for="OccurenceDates" class="form-control" id="activity-occurence" multiple>
                     @foreach (var occurenceDate in Model.OccurenceDates)
                     {
-                        <option value="@occurenceDate" selected="@occurenceDate == ActivityTypeId">@String.Format("{0:dd.MM.yyyy - hh:mm}", occurenceDate)</option>
+                        <option value="@occurenceDate">@String.Format("{0:dd.MM.yyyy - hh:mm}", occurenceDate)</option>
                     }
                 </select>
                 <span asp-validation-for="OccurenceDates" class="text-danger"></span>
@@ -53,7 +54,7 @@
                     </div>
                 </div>
             </div>
-            <input type="submit" value="Save changes" class="btn btn-lg btn-block btn-info" />
+            <input type="submit" value="Save changes" class="btn btn-lg btn-block btn-info" id="activity-submit" />
         </div>
     </form>
 </div>
@@ -63,25 +64,32 @@
         $(function () {
             const datePickerEl = $("#datetime-picker");
             const datePickerAddBtnEl = $("#datetime-picker__add");
-            const activityOccurence = $("#activity-occurence");
+            const activityOccurenceEl = $("#activity-occurence");
 
             datePickerEl.datetimepicker({ locale: "en", format: "L LT" });
 
             datePickerAddBtnEl.on("click", (event) => {
-                const dates = activityOccurence.children("option").map(function () { return $(this).val(); }).get();
-
+                const dates = activityOccurenceEl.children("option").map(function () { return $(this).val(); }).get();
                 const pickerDate = $(datePickerEl).find("input").val();
 
-                if (dates.includes(pickerDate)) {
+                if (dates.includes(pickerDate) || !pickerDate) {
                     return;
                 }
 
                 let option = $("<option>");
 
                 option.val(pickerDate);
-                option.text(pickerDate)
+                option.text(pickerDate);
 
-                activityOccurence.append(option);
+                activityOccurenceEl.append(option);
+                $("option").prop("selected", true);
+            });
+
+            $("option").on("mousedown", function (event) {
+                event.preventDefault();
+                $(this).prop("selected", $(this).prop("selected"));
+
+                return false;
             });
         });
     </script>

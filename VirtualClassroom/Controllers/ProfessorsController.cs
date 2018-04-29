@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Models.ProfessorViewModels;
@@ -14,11 +13,14 @@ namespace VirtualClassroom.Controllers
     {
         IProfessorServices professorServices = null;
         IStudentServices studentServices = null;
+        IActivityServices activityServices = null;
 
-        public ProfessorsController(IProfessorServices professorServices, IStudentServices studentServices)
+        public ProfessorsController(IProfessorServices professorServices, IStudentServices studentServices,
+            IActivityServices activityServices)
         {
             this.professorServices = professorServices;
             this.studentServices = studentServices;
+            this.activityServices = activityServices;
         }
 
         // GET: Professors
@@ -75,14 +77,13 @@ namespace VirtualClassroom.Controllers
         }
 
         // GET: Professors/5/Activities/1/Edit
+        [HttpGet]
         [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
         public ActionResult ActivityEdit(int professorId, int activityId)
         {
-            Professor professor = professorServices.GetProfessor(professorId);
             Activity activity = professorServices.GetActivity(professorId, activityId);
-            List<Professor> allProfessors = professorServices.GetAllProfessors().ToList();
-            List<Activity> allActivities = allProfessors.SelectMany(prof => prof.Activities).ToList();
-            List<ActivityType> allActivityTypes = allActivities.Select(act => act.ActivityType).ToList();
+            List<Activity> allActivities = activityServices.GetAllActivities().ToList();
+            List<ActivityType> allActivityTypes = activityServices.GetAllActivityTypes().ToList();
 
             ActivityEditVM activityEdit = new ActivityEditVM
             {
@@ -97,6 +98,39 @@ namespace VirtualClassroom.Controllers
             return View(activityEdit);
         }
 
+        // GET: Professors/5/Activities/1/Edit
+        [HttpPost]
+        [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
+        public ActionResult ActivityEdit(int professorId, ActivityEditVM activity)
+        {
+            List<ActivityType> allActivityTypes = activityServices.GetAllActivityTypes().ToList();
+            List<ActivityOccurence> allActivityOccurences = activityServices.GetActivityOccurences(activity.Id).ToList();
+
+            Activity editedActivity = new Activity
+            {
+                Id = activity.Id,
+                Name = activity.Name,
+                Description = activity.Description,
+                ActivityType = allActivityTypes.Find(act => act.Id == activity.ActivityTypeId),
+                OccurenceDates = new List<ActivityOccurence>()
+            };
+
+            activity.OccurenceDates.ToList().ForEach(date =>
+            {
+                var activityOccurence = allActivityOccurences.Find(act => act.OccurenceDate.Equals(date));
+                var lastId = activityOccurence != null ? activityOccurence.Id : 0;
+
+                editedActivity.OccurenceDates.Add(new ActivityOccurence
+                {
+                    Id = lastId++,
+                    OccurenceDate = date
+                });
+            });
+
+            activityServices.EditActivity(editedActivity);
+
+            return Redirect($"/Professors/{professorId}/Activities");
+        }
         // GET: Professors/5/Details
         [Route("Professors/{professorId}/Details")]
         public ActionResult Details(int id)
