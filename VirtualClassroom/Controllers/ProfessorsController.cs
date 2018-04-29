@@ -131,6 +131,29 @@ namespace VirtualClassroom.Controllers
 
             return Redirect($"/Professors/{professorId}/Activities");
         }
+
+        // GET: Students/1/Details
+        [Route("Students/{studentId}/Details")]
+        public ActionResult StudentDetails(int studentId)
+        {
+            Student student = studentServices.GetStudent(studentId);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            StudentDetailsVM studentDetails = new StudentDetailsVM
+            {
+                Id = student.Id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email
+            };
+
+            return View(studentDetails);
+        }
+
         // GET: Professors/5/Details
         [Route("Professors/{professorId}/Details")]
         public ActionResult Details(int id)

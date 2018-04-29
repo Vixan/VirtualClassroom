@@ -1,0 +1,17 @@
+﻿@model VirtualClassroom.Models.ProfessorViewModels.StudentDetailsVM
+@{
+    ViewData["Title"] = "StudentDetails";
+}
+
+<h2>Student Details</h2>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div>Name</div>
+        <div>Email</div>
+    </div>
+    <div class="col-sm-10">
+        <div>@Model.FirstName @Model.LastName</div>
+        <div>@Model.Email</div>
+    </div>
+</div>

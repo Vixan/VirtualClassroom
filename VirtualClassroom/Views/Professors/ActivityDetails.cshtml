@@ -18,10 +18,10 @@
                 </thead>
                 <tbody>
                     @foreach (var student in @Model.Students)
-                {
+                    {
                         <tr>
                             <td class="col-md-3">
-                                <a href="/Students/@student.Id">@student.FirstName @student.LastName</a>
+                                <a href="/Students/@student.Id/Details">@student.FirstName @student.LastName</a>
                             </td>
                             <td class="col-md-3">@student.ActivityInfo.Presence</td>
                             <td class="col-md-3">@student.ActivityInfo.Grade</td>
