@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Models.ProfessorViewModels
 {
@@ -16,5 +17,7 @@ namespace VirtualClassroom.Models.ProfessorViewModels
         public string Name { get; set; }
         
         public ICollection<ActivityStudentVM> Students { get; set; }
+
+        public ICollection<ActivityOccurence> OccurenceDates { get; set; }
     }
 }

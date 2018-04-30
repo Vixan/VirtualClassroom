@@ -47,7 +47,19 @@ namespace VirtualClassroom.Persistence.Memory
                     Name = "Laboratory"
                 }
             };
-
+            List<ActivityOccurence> activityOccurences = new List<ActivityOccurence>
+            {
+                new ActivityOccurence
+                {
+                    Id = 1,
+                    OccurenceDate = DateTime.Now
+                },
+                 new ActivityOccurence
+                {
+                    Id = 2,
+                    OccurenceDate = DateTime.Now.AddDays(-1).AddHours(-5).AddMinutes(-1)
+                }
+            };
             List<Activity> activities = new List<Activity> {
                 new Activity
                 {
@@ -57,11 +69,8 @@ namespace VirtualClassroom.Persistence.Memory
                     Description = "Lorem ipsum dolor sit amet, duo ei volutpat voluptaria, his ne vero suscipiantur. Mel sapientem interesset complectitur in",
                     OccurenceDates = new List<ActivityOccurence>
                     {
-                        new ActivityOccurence
-                        {
-                            Id = 1,
-                            OccurenceDate = DateTime.Now
-                        }
+                        activityOccurences[0],
+                        activityOccurences[1]
                     }
                 },
                 new Activity
@@ -72,44 +81,123 @@ namespace VirtualClassroom.Persistence.Memory
                     Description = "His ne vero suscipiantur. Mel sapientem interesset complectitur in",
                     OccurenceDates = new List<ActivityOccurence>
                     {
-                        new ActivityOccurence
+                        activityOccurences[1]
+                    }
+                }
+            };
+            List<Student> students = new List<Student>
+            {
+                new Student
+                {
+                    Id = 1,
+                    FirstName = "Mark",
+                    LastName = "Zuckerberg",
+                    Email = "mark_zucker@gmail.com",
+                    Activities = new List<Activity> { activities[0] },
+                    ActivityInfos = new List<ActivityInfo>
+                    {
+                        new ActivityInfo
+                        {
+                            Id = 1,
+                            Grade = 6,
+                            Presence = true,
+                            ActivityId = activities[0].Id,
+                            OccurenceDate = activityOccurences[0]
+                        }
+                    }
+                },
+                new Student
+                    {
+                    Id = 2,
+                    FirstName = "Bill",
+                    LastName = "Gates",
+                    Email = "billgates@outlook.com",
+                    Activities = new List<Activity> { activities[1] },
+                    ActivityInfos = new List<ActivityInfo>
+                    {
+                        new ActivityInfo
                         {
                             Id = 2,
-                            OccurenceDate = DateTime.Now.AddDays(-1).AddHours(-5).AddMinutes(-1)
+                            Grade = 0,
+                            Presence = false,
+                            ActivityId = activities[1].Id,
+                            OccurenceDate = activityOccurences[1]
+                        }
+                    }
+                },
+                new Student
+                {
+                    Id = 3,
+                    FirstName = "Dennis",
+                    LastName = "Richie",
+                    Email = "richiedev@mail.com",
+                    Activities = new List<Activity> { activities[0] },
+                    ActivityInfos = new List<ActivityInfo>
+                    {
+                        new ActivityInfo
+                        {
+                            Id = 3,
+                            Grade = 10,
+                            Presence = true,
+                            ActivityId = activities[0].Id,
+                            OccurenceDate = activityOccurences[0]
+                        }
+                    }
+                },
+                new Student
+                {
+                    Id = 4,
+                    FirstName = "Linus",
+                    LastName = "Torvalds",
+                    Email = "linustorvalds@gmail.com",
+                    Activities = new List<Activity> { activities[0], activities[1] },
+                    ActivityInfos = new List<ActivityInfo>
+                    {
+                        new ActivityInfo
+                        {
+                            Id = 3,
+                            Grade = 10,
+                            Presence = true,
+                            ActivityId = activities[0].Id,
+                            OccurenceDate = activityOccurences[0]
+                        },
+                        new ActivityInfo
+                        {
+                            Id = 4,
+                            Grade = 7,
+                            Presence = true,
+                            ActivityId = activities[1].Id,
+                            OccurenceDate = activityOccurences[1]
+                        },
+                        new ActivityInfo
+                        {
+                            Id = 5,
+                            Grade = 8,
+                            Presence = true,
+                            ActivityId = activities[0].Id,
+                            OccurenceDate = activityOccurences[1]
                         }
                     }
                 }
             };
-
-            activitiesRepository.Add(activities[0]);
-            activitiesRepository.Add(activities[1]);
-
-            professorsRepository.Add(new Professor
+            List<Professor> professors = new List<Professor>
             {
-                Id = 1,
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "johndoe@gmail.com",
-                Activities = activities
-            });
+                new Professor
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Email = "johndoe@gmail.com",
+                    Activities = activities
+                }
+            };
 
-            studentsRepository.Add(new Student
-            {
-                Id = 1,
-                FirstName = "Mark",
-                LastName = "Zuckerberg",
-                Email = "mark_zucker@gmail.com",
-                Activities = new List<Activity> { activities[0] }
-            });
+            professorsRepository.Add(professors[0]);
 
-            studentsRepository.Add(new Student
-            {
-                Id = 2,
-                FirstName = "Bill",
-                LastName = "Gates",
-                Email = "billgates@outlook.com",
-                Activities = new List<Activity> { activities[1] }
-            });
+            studentsRepository.Add(students[0]);
+            studentsRepository.Add(students[1]);
+            studentsRepository.Add(students[2]);
+            studentsRepository.Add(students[3]);
         }
     }
 }

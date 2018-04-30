@@ -1,0 +1,21 @@
+﻿@model VirtualClassroom.Models.ProfessorViewModels.ActivityStudentInfoVM
+@{
+    ViewData["Title"] = "ActivityInfoEdit";
+}
+
+<h2>@Model.ActivityName Activity Edit</h2>
+
+<div class="row">
+    <form method="post">
+        <div class="col-sm-6">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <h3 class="text-info">@Model.StudentName</h3>
+            @*<div class="form-group">
+                <input hidden asp-for="Id" />
+                <label asp-for="StudentName"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>*@
+        </div>
+    </form>
+</div>

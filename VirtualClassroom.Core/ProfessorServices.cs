@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Persistence;
@@ -57,20 +58,18 @@ namespace VirtualClassroom.Core
             IProfessorRepository professorRepository = persistanceContext.GetProfessorRepository();
             Professor professor = professorRepository.GetById(professorIdentifier);
 
-            Activity activityToEdit = null;
-            foreach (var professorActivity in professor.Activities)
-            {
-                if (professorActivity.Id == activity.Id)
-                {
-                    activityToEdit = professorActivity;
-                    break;
-                }
-            }
+            var activityToEdit = professor.Activities.ToList().Where(act => act.Id == activity.Id).FirstOrDefault();
 
             if (activityToEdit == null)
+            {
                 return false;
+            }
 
-            activityToEdit = activity;
+            activityToEdit.Name = activity.Name;
+            activityToEdit.Description = activity.Description;
+            activityToEdit.ActivityType = activity.ActivityType;
+            activityToEdit.OccurenceDates = activity.OccurenceDates;
+
             professorRepository.Save();
 
             return true;

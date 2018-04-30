@@ -1,0 +1,35 @@
+﻿@model VirtualClassroom.Models.StudentViewModels.ActivityInfoVM
+@{
+    ViewData["Title"] = "Activity Details";
+}
+
+<h2>Activity Details</h2>
+
+<h2>@Model.Name Details</h2>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Presence</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        @String.Format("{0:dd.MM.yyyy}", Model.OccurenceDate)
+                    </td>
+                    <td class="col-md-4">
+                        @(Model.Presence ? "Present" : "Absent")
+                    </td>
+                    <td class="col-md-4">
+                        @(Model.Grade > 0 ? $"{Model.Grade}" : "—")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

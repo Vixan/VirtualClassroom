@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Persistence;
@@ -50,6 +51,24 @@ namespace VirtualClassroom.Core
             return student.Activities;
         }
 
+        public Activity GetActivity(int studentIdentifier, int activityIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Activity studentActivity = studentRepository.GetActivities(studentIdentifier).Find(act => act.Id == activityIdentifier);
+
+            return studentActivity;
+        }
+
+        public ActivityInfo GetActivityInfo(int studentIdentifier, int activityIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Student student = studentRepository.GetById(studentIdentifier);
+            Activity studentActivity = studentRepository.GetActivities(studentIdentifier).Find(act => act.Id == activityIdentifier);
+            ActivityInfo activityInfo = student.ActivityInfos.ToList().Find(act => act.ActivityId == studentActivity.Id);
+
+            return activityInfo;
+        }
+
         public IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
@@ -78,6 +97,11 @@ namespace VirtualClassroom.Core
             }
 
             return activityGrades;
+        }
+
+        public bool EditActivity(int professorId, Activity activity)
+        {
+            return true;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtualClassroom.Core.Shared;
@@ -15,8 +14,7 @@ namespace VirtualClassroom.Controllers
         IStudentServices studentServices = null;
         IActivityServices activityServices = null;
 
-        public ProfessorsController(IProfessorServices professorServices, IStudentServices studentServices,
-            IActivityServices activityServices)
+        public ProfessorsController(IProfessorServices professorServices, IStudentServices studentServices, IActivityServices activityServices)
         {
             this.professorServices = professorServices;
             this.studentServices = studentServices;
@@ -29,11 +27,16 @@ namespace VirtualClassroom.Controllers
             return View();
         }
 
-        // GET: Professors/Activities/5
+        // GET: Professors/5/Activities
         [Route("Professors/{professorId}/Activities")]
         public ActionResult Activities(int professorId)
         {
             Professor professor = professorServices.GetProfessor(professorId);
+
+            if (professor == null)
+            {
+                return NotFound();
+            }
 
             return View(professor);
         }
@@ -46,6 +49,7 @@ namespace VirtualClassroom.Controllers
             Activity activity = professorServices.GetActivity(professorId, activityId);
             List<Student> students = studentServices.GetAllStudents().ToList();
             List<Student> activityStudents = new List<Student>(students.FindAll(student => student.Activities.ToList().Contains(activity)));
+            List<ActivityOccurence> activityOccurences = activity.OccurenceDates.ToList();
 
             if (!activityStudents.Any())
             {
@@ -56,22 +60,29 @@ namespace VirtualClassroom.Controllers
             {
                 Id = activity.Id,
                 Name = activity.Name,
-                Students = new List<ActivityStudentVM>
-                {
-                    new ActivityStudentVM
-                    {
-                        Id = activityStudents[0].Id,
-                        FirstName = activityStudents[0].FirstName,
-                        LastName = activityStudents[0].LastName,
-                        ActivityInfo = new ActivityInfoVM
-                        {
-                            Id = 1,
-                            Grade = 6,
-                            Presence = true
-                        }
-                    },
-                }
+                Students = new List<ActivityStudentVM>(),
+                OccurenceDates = activityOccurences
             };
+
+                foreach (var stud in activityStudents)
+                {
+                    var activityInfo = studentServices.GetActivityInfo(stud.Id, activityId);
+
+                    activityDetails.Students.Add(new ActivityStudentVM
+                    {
+                        Id = stud.Id,
+                        FirstName = stud.FirstName,
+                        LastName = stud.LastName,
+                        ActivityInfo = new ActivityStudentInfoVM
+                        {
+                            Id = activityInfo.Id,
+                            OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
+                            Grade = activityInfo.Grade,
+                            Presence = activityInfo.Presence
+                        }
+                    });
+                }
+            
 
             return View(activityDetails);
         }
@@ -82,7 +93,6 @@ namespace VirtualClassroom.Controllers
         public ActionResult ActivityEdit(int professorId, int activityId)
         {
             Activity activity = professorServices.GetActivity(professorId, activityId);
-            List<Activity> allActivities = activityServices.GetAllActivities().ToList();
             List<ActivityType> allActivityTypes = activityServices.GetAllActivityTypes().ToList();
 
             ActivityEditVM activityEdit = new ActivityEditVM
@@ -98,7 +108,7 @@ namespace VirtualClassroom.Controllers
             return View(activityEdit);
         }
 
-        // GET: Professors/5/Activities/1/Edit
+        // POST: Professors/5/Activities/1/Edit
         [HttpPost]
         [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
         public ActionResult ActivityEdit(int professorId, ActivityEditVM activity)
@@ -127,9 +137,33 @@ namespace VirtualClassroom.Controllers
                 });
             });
 
-            activityServices.EditActivity(editedActivity);
+            professorServices.EditActivity(professorId, editedActivity);
 
             return Redirect($"/Professors/{professorId}/Activities");
+        }
+
+        // GET: Professors/5/Activities/1/Students/3/Edit
+        [HttpGet]
+        [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit")]
+        public ActionResult ActivityStudentInfoEdit(int professorId, int activityId, int studentId)
+        {
+            Activity activity = activityServices.GetActivity(activityId);
+            Student student = studentServices.GetStudent(studentId);
+            Activity studentActivity = studentServices.GetActivity(studentId, activityId);
+
+            var activityInfo = studentServices.GetActivityInfo(studentId, activityId);
+
+            ActivityStudentInfoVM activityDetails = new ActivityStudentInfoVM
+            {
+                Id = studentActivity.Id,
+                Grade = activityInfo.Grade,
+                OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
+                Presence = activityInfo.Presence,
+                ActivityName = studentActivity.Name,
+                StudentName = $"{student.FirstName} {student.LastName}"
+            };
+
+            return View(activityDetails);
         }
 
         // GET: Students/1/Details
@@ -161,29 +195,6 @@ namespace VirtualClassroom.Controllers
             return View();
         }
 
-        // GET: Professors/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Professors/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
         // GET: Professors/Edit/5
         public ActionResult Edit(int id)
         {
@@ -198,29 +209,6 @@ namespace VirtualClassroom.Controllers
             try
             {
                 // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Professors/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Professors/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
 
                 return RedirectToAction(nameof(Index));
             }

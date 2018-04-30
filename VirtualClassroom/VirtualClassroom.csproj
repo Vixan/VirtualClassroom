@@ -26,9 +26,4 @@
     <ProjectReference Include="..\VirtualClassroom.Persistence.Memory\VirtualClassroom.Persistence.Memory.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\StudentViewModels\" />
-    <Folder Include="Views\Student\" />
-  </ItemGroup>
-
 </Project>

@@ -26,7 +26,14 @@
                 <select asp-for="ActivityTypeId" class="form-control" id="activity-types">
                     @foreach (var activityType in Model.ActivityTypes)
                     {
-                        <option value="@activityType.Id" selected="@activityType.Id == ActivityTypeId ? 'selected' : ''">@activityType.Name</option>
+                        @if (activityType.Id == Model.ActivityTypeId)
+                        {
+                            <option value="@activityType.Id" selected>@activityType.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@activityType.Id">@activityType.Name</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="ActivityTypeId" class="text-danger"></span>
@@ -82,10 +89,10 @@
                 option.text(pickerDate);
 
                 activityOccurenceEl.append(option);
-                $("option").prop("selected", true);
+                $("#activity-occurence option").prop("selected", true);
             });
 
-            $("option").on("mousedown", function (event) {
+            $("#activity-occurence option").on("mousedown", function (event) {
                 event.preventDefault();
                 $(this).prop("selected", $(this).prop("selected"));
 
