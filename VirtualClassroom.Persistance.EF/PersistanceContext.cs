@@ -13,6 +13,11 @@ namespace VirtualClassroom.Persistence.EF
         private ProfessorRepository professorRepository = null;
         private StudentRepository studentRepository = null;
 
+        public PersistanceContext (IServiceProvider serviceProvider)
+        {
+            InitializeDbContext(serviceProvider);
+        }
+
         private void InitializeDbContext(IServiceProvider serviceProvider)
         {
             if (dataContext == null)
@@ -51,8 +56,6 @@ namespace VirtualClassroom.Persistence.EF
 
         public void InitializeData(IServiceProvider serviceProvider)
         {
-            InitializeDbContext(serviceProvider);
-
             // Initialize data below
         }
     }
