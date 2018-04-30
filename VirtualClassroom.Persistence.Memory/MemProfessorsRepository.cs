@@ -7,79 +7,51 @@ namespace VirtualClassroom.Persistence.Memory
 {
     public class MemProfessorsRepository : IProfessorRepository
     {
-        public void Add(Activity entity)
+        List<Professor> professors = new List<Professor>();
+
+        public void Add(Professor professor)
         {
-            throw new NotImplementedException();
+            professors.Add(professor);
         }
 
-        public void Add(Professor entity)
+        public void Delete(Professor professor)
         {
-            throw new NotImplementedException();
+            professors.Remove(professor);
         }
 
-        public void Delete(Activity entity)
+        public List<Activity> GetActivities(int professorIdentifier)
         {
-            throw new NotImplementedException();
+            var professor = professors.Find(prof => prof.Id == professorIdentifier);
+
+            return new List<Activity>(professor.Activities);
         }
 
-        public void Delete(Professor entity)
+        public IEnumerable<Professor> GetAll()
         {
-            throw new NotImplementedException();
-        }
-
-        public List<Activity> GetActivities()
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<ActivityInfo> GetActivityInfos()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Activity> GetAll()
-        {
-            throw new NotImplementedException();
+            return professors;
         }
 
         public Professor GetByEmail(string email)
-        {
-            throw new NotImplementedException();
+        { 
+            return professors.Find(prof => prof.Email == email);
         }
 
-        public Activity GetById(int identifier)
+        public Professor GetById(int identifier)
         {
-            throw new NotImplementedException();
+            return professors.Find(prof => prof.Id == identifier);
         }
 
-        public Activity GetByName(string name)
+        public Professor GetByName(string name)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<Activity> GetByType(ActivityType type)
-        {
-            throw new NotImplementedException();
+            return professors.Find(prof =>
+                $"{prof.FirstName} {prof.LastName}" == name ||
+                $"{prof.LastName} {prof.FirstName}" == name
+            );
         }
 
         public void Save()
         {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<Professor> IRepository<Professor>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        Professor IRepository<Professor>.GetById(int identifier)
-        {
-            throw new NotImplementedException();
-        }
-
-        Professor IProfessorRepository.GetByName(string name)
-        {
-            throw new NotImplementedException();
+            
         }
     }
 }

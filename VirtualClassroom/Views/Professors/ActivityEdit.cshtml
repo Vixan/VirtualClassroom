@@ -1,0 +1,103 @@
+﻿@model VirtualClassroom.Models.ProfessorViewModels.ActivityEditVM
+
+@{
+    ViewData["Title"] = "Activity Edit";
+}
+
+<h2>Edit Activity @Model.Name</h2>
+
+<div class="row">
+    <form method="post">
+        <div class="col-sm-6">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <input hidden asp-for="Id" />
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ActivityTypeId"></label>
+                <select asp-for="ActivityTypeId" class="form-control" id="activity-types">
+                    @foreach (var activityType in Model.ActivityTypes)
+                    {
+                        @if (activityType.Id == Model.ActivityTypeId)
+                        {
+                            <option value="@activityType.Id" selected>@activityType.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@activityType.Id">@activityType.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="ActivityTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OccurenceDates"></label>
+                <select asp-for="OccurenceDates" class="form-control" id="activity-occurence" multiple>
+                    @foreach (var occurenceDate in Model.OccurenceDates)
+                    {
+                        <option value="@occurenceDate">@String.Format("{0:dd.MM.yyyy - hh:mm}", occurenceDate)</option>
+                    }
+                </select>
+                <span asp-validation-for="OccurenceDates" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="col">
+                    <div class="input-group date" id="datetime-picker">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        <input type="text" class="form-control" />
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default" id="datetime-picker__add">Add Date</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" value="Save changes" class="btn btn-lg btn-block btn-info" id="activity-submit" />
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            const datePickerEl = $("#datetime-picker");
+            const datePickerAddBtnEl = $("#datetime-picker__add");
+            const activityOccurenceEl = $("#activity-occurence");
+
+            datePickerEl.datetimepicker({ locale: "en", format: "L LT" });
+
+            datePickerAddBtnEl.on("click", (event) => {
+                const dates = activityOccurenceEl.children("option").map(function () { return $(this).val(); }).get();
+                const pickerDate = $(datePickerEl).find("input").val();
+
+                if (dates.includes(pickerDate) || !pickerDate) {
+                    return;
+                }
+
+                let option = $("<option>");
+
+                option.val(pickerDate);
+                option.text(pickerDate);
+
+                activityOccurenceEl.append(option);
+                $("#activity-occurence option").prop("selected", true);
+            });
+
+            $("#activity-occurence option").on("mousedown", function (event) {
+                event.preventDefault();
+                $(this).prop("selected", $(this).prop("selected"));
+
+                return false;
+            });
+        });
+    </script>
+}

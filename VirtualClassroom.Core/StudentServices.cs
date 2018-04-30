@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Persistence;
@@ -14,12 +15,58 @@ namespace VirtualClassroom.Core
             this.persistanceContext = persistanceContext;
         }
 
+        public Student GetStudent(int studentIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            return studentRepository.GetById(studentIdentifier);
+        }
+
+        public IEnumerable<Student> GetAllStudents()
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            return studentRepository.GetAll();
+        }
+
+        public void AddStudent(Student student)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            studentRepository.Add(student);
+        }
+
+        public void DeleteStudent(Student student)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+
+            studentRepository.Delete(student);
+        }
+
         public IEnumerable<Activity> GetActivities(int studentIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
 
             return student.Activities;
+        }
+
+        public Activity GetActivity(int studentIdentifier, int activityIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Activity studentActivity = studentRepository.GetActivities(studentIdentifier).Find(act => act.Id == activityIdentifier);
+
+            return studentActivity;
+        }
+
+        public ActivityInfo GetActivityInfo(int studentIdentifier, int activityIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Student student = studentRepository.GetById(studentIdentifier);
+            Activity studentActivity = studentRepository.GetActivities(studentIdentifier).Find(act => act.Id == activityIdentifier);
+            ActivityInfo activityInfo = student.ActivityInfos.ToList().Find(act => act.ActivityId == studentActivity.Id);
+
+            return activityInfo;
         }
 
         public IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier)
@@ -50,6 +97,11 @@ namespace VirtualClassroom.Core
             }
 
             return activityGrades;
+        }
+
+        public bool EditActivity(int professorId, Activity activity)
+        {
+            return true;
         }
     }
 }

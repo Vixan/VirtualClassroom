@@ -1,0 +1,61 @@
+﻿@model VirtualClassroom.Models.ProfessorViewModels.ActivityDetailsVM
+@{
+    ViewData["Title"] = "Activity Details";
+}
+@if (Model != null)
+{
+    <h2>@Model.Name Details</h2>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Student</th>
+                        <th>Presence</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var occurenceDate in Model.OccurenceDates)
+                    {
+                        @foreach (var student in Model.Students)
+                        {
+                            <tr>
+                                <td class="col-md-2">
+                                    @String.Format("{0:dd.MM.yyyy}", occurenceDate.OccurenceDate)
+                                </td>
+                                <td class="col-md-4">
+                                    <a href="/Students/@student.Id/Details">@student.FirstName @student.LastName</a>
+                                </td>
+                                <td class="col-md-2">
+                                    @(student.ActivityInfo.Presence ? "Present" : "Absent")
+                                </td>
+                                <td class="col-md-2">
+                                    @(student.ActivityInfo.Grade > 0 ? $"{student.ActivityInfo.Grade}" : "—")
+                                </td>
+                                <td class="col-md-2">
+                                    <a href="./@Model.Id/Students/@student.Id/Edit">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger">
+                <h1 class="text-center">No Data</h1>
+            </div>
+        </div>
+    </div>
+}
+

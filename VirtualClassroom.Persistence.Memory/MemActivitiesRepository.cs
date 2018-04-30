@@ -5,41 +5,43 @@ using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Persistence.Memory
 {
-    public class MemActivitiesRepository : IProfessorRepository
+    public class MemActivitiesRepository : IActivitiesRepository
     {
-        public void Add(Activity entity)
+        List<Activity> activities = new List<Activity>();
+
+        public void Add(Activity activity)
         {
-            throw new NotImplementedException();
+            activities.Add(activity);
         }
 
-        public void Delete(Activity entity)
+        public void Delete(Activity activity)
         {
-            throw new NotImplementedException();
+            activities.Remove(activity);
         }
 
         public IEnumerable<Activity> GetAll()
         {
-            throw new NotImplementedException();
+            return activities;
         }
 
         public Activity GetById(int identifier)
         {
-            throw new NotImplementedException();
+            return activities.Find(activity => activity.Id == identifier);
         }
 
         public Activity GetByName(string name)
         {
-            throw new NotImplementedException();
+            return activities.Find(activity => activity.Name == name);
         }
 
         public List<Activity> GetByType(ActivityType type)
         {
-            throw new NotImplementedException();
+            return activities.FindAll(activity => activity.ActivityType == type);
         }
 
         public void Save()
         {
-            throw new NotImplementedException();
+
         }
     }
 }
