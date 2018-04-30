@@ -32,7 +32,7 @@ namespace VirtualClassroom
             authenticationService.InitializeContext(services, Configuration);        
 
             // Add persistance
-            services.AddScoped<IPersistanceContext, MemoryPersistenceContext>();           
+            services.AddScoped<IPersistanceContext, PersistanceContext>();           
             var dataService = services.BuildServiceProvider().GetService<IPersistanceContext>();
             dataService.InitializeContext(services, Configuration);
 
