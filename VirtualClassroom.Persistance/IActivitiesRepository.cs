@@ -6,6 +6,8 @@ namespace VirtualClassroom.Persistence
     public interface IActivitiesRepository : IRepository<Activity>
     {
         Activity GetByName(string name);
-        List<Activity> GetByType(ActivityType type); 
+        List<Activity> GetByType(ActivityType type);
+
+        List<ActivityType> GetActivityTypes();
     }
 }

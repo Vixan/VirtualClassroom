@@ -11,9 +11,10 @@ using VirtualClassroom.Persistence.EF;
 namespace VirtualClassroom.Persistence.EF.Migrations
 {
     [DbContext(typeof(DummyDbContext))]
-    partial class DummyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180501074432_RemovedLazyFromDomain")]
+    partial class RemovedLazyFromDomain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

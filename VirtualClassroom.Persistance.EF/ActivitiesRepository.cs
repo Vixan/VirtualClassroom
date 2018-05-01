@@ -44,5 +44,12 @@ namespace VirtualClassroom.Persistence.EF
 
             return activities;
         }
+
+        public List<ActivityType> GetActivityTypes()
+        {
+            List<ActivityType> activityTypes = dataContext.ActitivityTypes.ToList();
+
+            return activityTypes;
+        }
     }
 }

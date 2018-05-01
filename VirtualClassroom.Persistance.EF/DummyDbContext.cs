@@ -14,5 +14,6 @@ namespace VirtualClassroom.Persistence.EF
         public DbSet<VirtualClassroom.Domain.Student> Students { get; set; }
         public DbSet<VirtualClassroom.Domain.Professor> Professors { get; set; }
         public DbSet<VirtualClassroom.Domain.Activity> Activities { get; set; }
+        public DbSet<VirtualClassroom.Domain.ActivityType> ActitivityTypes { get; set; }
     }
 }
