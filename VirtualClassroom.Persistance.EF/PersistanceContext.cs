@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VirtualClassroom.Domain;
 
 namespace VirtualClassroom.Persistence.EF
 {
@@ -28,6 +29,26 @@ namespace VirtualClassroom.Persistence.EF
                 professorRepository = new ProfessorRepository(dataContext);
                 studentRepository = new StudentRepository(dataContext);
             }
+        }
+
+        private void InitializeDbData()
+        {
+            if(activitiesRepository.GetActivityType("Course") == null)
+            {
+                dataContext.ActitivityTypes.Add(new ActivityType { Name = "Course" });
+            }
+
+            if(activitiesRepository.GetActivityType("Laboratory") == null)
+            {
+                dataContext.ActitivityTypes.Add(new ActivityType { Name = "Laboratory" });
+            }
+
+            if(activitiesRepository.GetActivityType("Seminary") == null)
+            {
+                dataContext.ActitivityTypes.Add(new ActivityType { Name = "Seminary" });
+            }
+
+            dataContext.SaveChanges();
         }
 
         public IActivitiesRepository GetActivitiesRepository()
@@ -57,6 +78,8 @@ namespace VirtualClassroom.Persistence.EF
         public void InitializeData(IServiceProvider serviceProvider)
         {
             // Initialize data below
+
+            InitializeDbData();
         }
     }
 }

@@ -12,9 +12,6 @@ namespace VirtualClassroom
         {
             var host = BuildWebHost(args);
 
-
-            
-
             using (var scope = host.Services.CreateScope())
             {
                 var dataService = scope.ServiceProvider.GetService<IPersistanceContext>();
@@ -22,8 +19,8 @@ namespace VirtualClassroom
                     dataService.InitializeData(scope.ServiceProvider);
 
                 var authenticationService = scope.ServiceProvider.GetService<IAuthentication>();
-                authenticationService.InitializeData(scope.ServiceProvider);
-
+                if (authenticationService != null)
+                    authenticationService.InitializeData(scope.ServiceProvider);
             }
 
             host.Run();

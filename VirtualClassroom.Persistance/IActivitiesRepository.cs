@@ -8,6 +8,7 @@ namespace VirtualClassroom.Persistence
         Activity GetByName(string name);
         List<Activity> GetByType(ActivityType type);
 
+        ActivityType GetActivityType(string activityTypeName);
         List<ActivityType> GetActivityTypes();
     }
 }

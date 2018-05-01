@@ -19,6 +19,16 @@ namespace VirtualClassroom.Persistence.Memory
             activities.Remove(activity);
         }
 
+        public ActivityType GetActivityType(string activityTypeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ActivityType> GetActivityTypes()
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Activity> GetAll()
         {
             return activities;
