@@ -16,16 +16,15 @@ namespace VirtualClassroom.Persistence.EF
         {
             Student student = dataContext.Students
                 .Where(s => s.Id == studentIdentifier)
-                    .Include(s => s.Activities)
+                    .Include(s => s.ActivitiesLink)
                 .FirstOrDefault();
-
-            return student.Activities.ToList();
+            return student.ActivitiesLink.Select(act => act.Activity).ToList();
         }
 
         public override IEnumerable<Student> GetAll()
         {
             List<Student> students = dataContext.Students
-                .Include(student => student.Activities)
+                .Include(student => student.ActivitiesLink)
                 .Include(student => student.ActivityInfos)
                 .ToList();
 
@@ -36,7 +35,7 @@ namespace VirtualClassroom.Persistence.EF
         {
             return dataContext.Students
                 .Where(student => student.Id == identifier)
-                    .Include(student => student.Activities)
+                    .Include(student => student.ActivitiesLink)
                     .Include(student => student.ActivityInfos)
                 .FirstOrDefault();
         }
@@ -45,7 +44,7 @@ namespace VirtualClassroom.Persistence.EF
         {
             return dataContext.Students
                 .Where(student => student.Email == email)
-                    .Include(student => student.Activities)
+                    .Include(student => student.ActivitiesLink)
                     .Include(student => student.ActivityInfos)
                 .FirstOrDefault();
         }
@@ -54,7 +53,7 @@ namespace VirtualClassroom.Persistence.EF
         {
             return dataContext.Students
                 .Where(student => student.FirstName == name)
-                    .Include(student => student.Activities)
+                    .Include(student => student.ActivitiesLink)
                     .Include(student => student.ActivityInfos)
                 .FirstOrDefault();
         }

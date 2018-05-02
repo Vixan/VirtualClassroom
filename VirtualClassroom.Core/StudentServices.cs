@@ -46,9 +46,8 @@ namespace VirtualClassroom.Core
         public IEnumerable<Activity> GetActivities(int studentIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
-            Student student = studentRepository.GetById(studentIdentifier);
 
-            return student.Activities;
+            return studentRepository.GetActivities(studentIdentifier);
         }
 
         public Activity GetActivity(int studentIdentifier, int activityIdentifier)

@@ -30,10 +30,11 @@ namespace VirtualClassroom.Persistence.EF
 
         public override IEnumerable<Activity> GetAll()
         {
-            List<Activity> activities = (List<Activity>)dataContext.Activities
-                .Include(activity => activity.OccurenceDates);
-
-            return activities;
+            return dataContext.Activities
+                .Include(activity => activity.OccurenceDates)
+                .Include(activity => activity.ActivityType)
+                .Include(activity =>activity.StudentsLink)
+                    .ThenInclude( studentsLink => studentsLink.Student);
         }
 
         public List<Activity> GetByType(ActivityType type)

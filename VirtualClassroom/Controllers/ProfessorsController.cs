@@ -47,9 +47,9 @@ namespace VirtualClassroom.Controllers
         {
             Professor professor = professorServices.GetProfessor(professorId);
             Activity activity = professorServices.GetActivity(professorId, activityId);
-            List<Student> students = studentServices.GetAllStudents().ToList();
-            List<Student> activityStudents = new List<Student>(students.FindAll(student => student.Activities.ToList().Contains(activity)));
-            List<ActivityOccurence> activityOccurences = activity.OccurenceDates.ToList();
+            IEnumerable<Student> students = studentServices.GetAllStudents().ToList();
+            IEnumerable<Student> activityStudents = activityServices.GetStudents(activity);
+            ICollection<ActivityOccurence> activityOccurences = activity.OccurenceDates.ToList();
 
             if (!activityStudents.Any())
             {
@@ -64,25 +64,25 @@ namespace VirtualClassroom.Controllers
                 OccurenceDates = activityOccurences
             };
 
-                foreach (var stud in activityStudents)
-                {
-                    var activityInfo = studentServices.GetActivityInfo(stud.Id, activityId);
+            foreach (var stud in activityStudents)
+            {
+                var activityInfo = studentServices.GetActivityInfo(stud.Id, activityId);
 
-                    activityDetails.Students.Add(new ActivityStudentVM
+                activityDetails.Students.Add(new ActivityStudentVM
+                {
+                    Id = stud.Id,
+                    FirstName = stud.FirstName,
+                    LastName = stud.LastName,
+                    ActivityInfo = new ActivityStudentInfoVM
                     {
-                        Id = stud.Id,
-                        FirstName = stud.FirstName,
-                        LastName = stud.LastName,
-                        ActivityInfo = new ActivityStudentInfoVM
-                        {
-                            Id = activityInfo.Id,
-                            OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
-                            Grade = activityInfo.Grade,
-                            Presence = activityInfo.Presence
-                        }
-                    });
-                }
-            
+                        Id = activityInfo.Id,
+                        OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
+                        Grade = activityInfo.Grade,
+                        Presence = activityInfo.Presence
+                    }
+                });
+            }
+
 
             return View(activityDetails);
         }

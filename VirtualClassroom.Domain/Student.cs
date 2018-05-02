@@ -10,7 +10,7 @@ namespace VirtualClassroom.Domain
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<Activity> Activities { get; set; }
+        public ICollection<StudentActivity> ActivitiesLink { get; set; }
 
         public ICollection<ActivityInfo> ActivityInfos { get; set; }
     }

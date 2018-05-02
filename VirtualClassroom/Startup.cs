@@ -39,6 +39,7 @@ namespace VirtualClassroom
             // Add bussines
             services.AddScoped<IStudentServices, StudentServices>();
             services.AddScoped<IProfessorServices, ProfessorServices>();
+            services.AddScoped<IActivityServices, ActivityServices>();
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();

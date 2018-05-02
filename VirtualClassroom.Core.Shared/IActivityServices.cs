@@ -15,5 +15,6 @@ namespace VirtualClassroom.Core.Shared
         ActivityType GetActivityType(int activityId);
         IEnumerable<ActivityType> GetAllActivityTypes();
         IEnumerable<ActivityOccurence> GetActivityOccurences(int activityIdentifier);
+        IEnumerable<Student> GetStudents(Activity activity);
     }
 }

@@ -11,9 +11,10 @@ using VirtualClassroom.Persistence.EF;
 namespace VirtualClassroom.Persistence.EF.Migrations
 {
     [DbContext(typeof(DummyDbContext))]
-    partial class DummyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180502080221_AddActivityRelation")]
+    partial class AddActivityRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,11 +34,15 @@ namespace VirtualClassroom.Persistence.EF.Migrations
 
                     b.Property<int?>("ProfessorId");
 
+                    b.Property<int?>("StudentId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityTypeId");
 
                     b.HasIndex("ProfessorId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Activities");
                 });
@@ -130,24 +135,6 @@ namespace VirtualClassroom.Persistence.EF.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("VirtualClassroom.Domain.StudentActivity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ActivityId");
-
-                    b.Property<int?>("StudentId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentActivity");
-                });
-
             modelBuilder.Entity("VirtualClassroom.Domain.Activity", b =>
                 {
                     b.HasOne("VirtualClassroom.Domain.ActivityType", "ActivityType")
@@ -157,6 +144,10 @@ namespace VirtualClassroom.Persistence.EF.Migrations
                     b.HasOne("VirtualClassroom.Domain.Professor")
                         .WithMany("Activities")
                         .HasForeignKey("ProfessorId");
+
+                    b.HasOne("VirtualClassroom.Domain.Student")
+                        .WithMany("Activities")
+                        .HasForeignKey("StudentId");
                 });
 
             modelBuilder.Entity("VirtualClassroom.Domain.ActivityInfo", b =>
@@ -180,17 +171,6 @@ namespace VirtualClassroom.Persistence.EF.Migrations
                     b.HasOne("VirtualClassroom.Domain.Activity", "Activity")
                         .WithMany("OccurenceDates")
                         .HasForeignKey("ActivityId");
-                });
-
-            modelBuilder.Entity("VirtualClassroom.Domain.StudentActivity", b =>
-                {
-                    b.HasOne("VirtualClassroom.Domain.Activity", "Activity")
-                        .WithMany("StudentsLink")
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("VirtualClassroom.Domain.Student", "Student")
-                        .WithMany("ActivitiesLink")
-                        .HasForeignKey("StudentId");
                 });
 #pragma warning restore 612, 618
         }

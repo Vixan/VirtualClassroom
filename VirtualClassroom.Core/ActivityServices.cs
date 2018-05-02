@@ -79,5 +79,22 @@ namespace VirtualClassroom.Core
 
             return activity.OccurenceDates;
         }
+
+        public IEnumerable<Student> GetStudents(Activity activity)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            Activity storedActivity = activity;
+            if (activitiesRepository != null)
+            {
+                var tempActivity = activitiesRepository.GetById(activity.Id);
+                if (tempActivity != null)
+                {
+                    storedActivity = tempActivity;
+                }
+            }
+            IEnumerable<Student> students = storedActivity.StudentsLink.Select(studLink => studLink.Student);
+
+            return students;
+        }
     }
 }

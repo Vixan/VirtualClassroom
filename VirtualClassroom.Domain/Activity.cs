@@ -10,7 +10,9 @@ namespace VirtualClassroom.Domain
         public string Description { get; set; }
 
         public ICollection<ActivityOccurence> OccurenceDates { get; set; }
-        
+
+        public ICollection<StudentActivity> StudentsLink { get; set; }
+
         public ActivityType ActivityType { get; set; }
     }
 }

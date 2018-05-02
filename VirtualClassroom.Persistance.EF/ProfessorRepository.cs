@@ -17,9 +17,14 @@ namespace VirtualClassroom.Persistence.EF
             Professor professor = dataContext.Professors
                 .Where(p => p.Id == professorIdentifier)
                     .Include(p => p.Activities)
+                        .ThenInclude(activity => activity.ActivityType)                    
+                    .Include(p => p.Activities)
+                        .ThenInclude(activity => activity.OccurenceDates)
+                    .Include(p => p.Activities)
+                        .ThenInclude(activity => activity.StudentsLink)
                 .FirstOrDefault();
 
-            return (List<Activity>)professor.Activities;
+            return professor.Activities.ToList();
         }
 
         public override IEnumerable<Professor> GetAll()
@@ -33,10 +38,16 @@ namespace VirtualClassroom.Persistence.EF
 
         public override Professor GetById(int identifier)
         {
-            return dataContext.Professors
-                .Where(professor => professor.Id == identifier)
-                    .Include(professor => professor.Activities)
+            var retProf = dataContext.Professors
+                .Where(professor => professor.Id == identifier)                    
                 .FirstOrDefault();
+
+            if (retProf != null)
+            {
+                retProf.Activities = GetActivities(identifier);
+            }
+
+            return retProf;
         }
 
         public Professor GetByEmail(string email)
