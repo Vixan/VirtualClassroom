@@ -168,17 +168,6 @@ namespace VirtualClassroom.Controllers
                                                .Find(type => type.Name == activityModel.ActivityTypeName)
             };
 
-            if(activityModel.OccurenceDates != null)
-            {
-                List<ActivityOccurence> activityOccurence = new List<ActivityOccurence>();
-                foreach(var occurenceDate in activityModel.OccurenceDates)
-                {
-                    activityOccurence.Add(new ActivityOccurence { Activity = activity, OccurenceDate = occurenceDate });
-                }
-
-                activity.OccurenceDates = activityOccurence;
-            }
-
             if(activityModel.StudentsId.Count != 0)
             {
                 List<StudentActivity> students = new List<StudentActivity>();
@@ -189,6 +178,25 @@ namespace VirtualClassroom.Controllers
                 }
 
                 activity.StudentsLink = students;
+            }
+
+            if(activityModel.OccurenceDates != null)
+            {
+                List<ActivityOccurence> activityOccurence = new List<ActivityOccurence>();
+                foreach(var occurenceDate in activityModel.OccurenceDates)
+                {
+                    ActivityOccurence occurence = new ActivityOccurence { Activity = activity, OccurenceDate = occurenceDate };
+                    activityOccurence.Add(occurence);
+
+                    foreach(var studentLink in activity.StudentsLink)
+                    {
+                        Student student = studentLink.Student;
+
+                        student.ActivityInfos.Add(new ActivityInfo { Activity = activity, ActivityId = activity.Id, Student = student.Id, OccurenceDate = occurence });
+                    }
+                }
+
+                activity.OccurenceDates = activityOccurence;
             }
 
             if (!professorServices.CreateActivity(professorId, activity))

@@ -17,7 +17,9 @@ namespace VirtualClassroom.Persistence.EF
             Student student = dataContext.Students
                 .Where(s => s.Id == studentIdentifier)
                     .Include(s => s.ActivitiesLink)
+                        .ThenInclude(activityLink => activityLink.Activity)
                 .FirstOrDefault();
+
             return student.ActivitiesLink.Select(act => act.Activity).ToList();
         }
 

@@ -85,21 +85,6 @@
                     </select>
                     <span asp-validation-for="StudentsId" class="text-danger"></span>
                 </div>
-
-                <!--{
-                    List<SelectListItem> listStudents = new List<SelectListItem>();
-                    foreach (var student in studentServices.GetAllStudents())
-                    {
-                        listStudents.Add(new SelectListItem
-                        {
-                            Text = student.FirstName + " " + student.LastName,
-                            Value = student.Email
-                        });
-                    }
-                }
-                <label asp-for="Students"></label>
-                Html.DropDownList("Students", listStudents, new { class = "form-control" })
-                <span asp-validation-for="Students" class="text-danger"></span>-->
             </div>
     </form>
 </div>
@@ -140,9 +125,10 @@
 
                     return false;
                 });
-
+                
                 $("#students option").on("mousedown", function (event) {
                     event.preventDefault();
+
                     $(this).prop("selected", $(this).prop("selected") ? false : true);
 
                     return false;
