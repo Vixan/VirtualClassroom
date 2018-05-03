@@ -106,6 +106,7 @@ namespace VirtualClassroom.Controllers
 
         // POST: Professors/5/Activities/1/Edit
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
         public ActionResult ActivityEdit(int professorId, ActivityEditVM activity)
         {
@@ -140,14 +141,13 @@ namespace VirtualClassroom.Controllers
 
         // GET: Professors/5/Activities/1/Students/3/Edit
         [HttpGet]
-        [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit")]
-        public ActionResult ActivityStudentInfoEdit(int professorId, int activityId, int studentId)
+        [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit/{activityInfoId}")]
+        public ActionResult ActivityStudentInfoEdit(int professorId, int activityId, int studentId, int activityInfoId)
         {
             Activity activity = activityServices.GetActivity(activityId);
+            ActivityInfo activityInfo = studentServices.GetActivityInfo(studentId, activityId);
             Student student = studentServices.GetStudent(studentId);
             Activity studentActivity = studentServices.GetActivity(studentId, activityId);
-
-            var activityInfo = studentServices.GetActivityInfo(studentId, activityId);
 
             ActivityStudentInfoVM activityDetails = new ActivityStudentInfoVM
             {
@@ -160,6 +160,28 @@ namespace VirtualClassroom.Controllers
             };
 
             return View(activityDetails);
+        }
+
+        // GET: Professors/5/Activities/1/Students/3/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit")]
+        public ActionResult ActivityStudentInfoEdit(int professorId, int activityId, int studentId, ActivityStudentInfoVM activityStudentInfo)
+        {
+            Student student = studentServices.GetStudent(studentId);
+            ActivityInfo studentActivity = studentServices.GetActivityInfo(studentId, activityId);
+
+            ActivityInfo activityInfo = new ActivityInfo
+            {
+                Id = activityStudentInfo.Id,
+                ActivityId = activityId,
+                Grade = activityStudentInfo.Grade,
+                Presence = activityStudentInfo.Presence
+            };
+
+            studentServices.EditActivity(studentId, activityInfo);
+
+            return RedirectToAction("ActivityDetails");
         }
 
         // GET: Students/1/Details

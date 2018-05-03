@@ -3,19 +3,31 @@
     ViewData["Title"] = "ActivityInfoEdit";
 }
 
-<h2>@Model.ActivityName Activity Edit</h2>
+<h2>@Model.ActivityName</h2>
 
 <div class="row">
     <form method="post">
         <div class="col-sm-6">
+            <div class="form-group">
+                <p class="lead">
+                    Student <span class="text-info">@Model.StudentName</span><br />
+                    Date    <span class="text-info">@String.Format("{0:dd.MM.yyyy - hh:mm}", Model.OccurenceDate)</span>
+                </p>
+            </div>
+            <input hidden asp-for="Id" />
             <div asp-validation-summary="All" class="text-danger"></div>
-            <h3 class="text-info">@Model.StudentName</h3>
-            @*<div class="form-group">
-                <input hidden asp-for="Id" />
-                <label asp-for="StudentName"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>*@
+            <div class="form-group">
+                <label asp-for="Presence"></label>
+                <select asp-for="Presence" class="form-control">
+                    <option value="true">Present</option>
+                    <option value="false">Absent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Grade"></label>
+                <input asp-for="Grade" type="number" class="form-control" />
+            </div>
+            <input type="submit" value="Save changes" class="btn btn-lg btn-block btn-info" />
         </div>
     </form>
 </div>

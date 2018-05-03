@@ -12,7 +12,7 @@ namespace VirtualClassroom.Core.Shared
         IEnumerable<Activity> GetActivities(int studentIdentifier);
         Activity GetActivity(int studentIdentifier, int activityIdentifier);
         ActivityInfo GetActivityInfo(int studentIdentifier, int activityIdentifier);
-        bool EditActivity(int professorId, Activity activity);
+        bool EditActivity(int studentIdentifier, ActivityInfo activityInfo);
         IEnumerable<int> GetActivityGrades(int studentIdentifier, int activityIdentifier);
         IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier);
     }

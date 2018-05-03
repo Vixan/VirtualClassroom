@@ -98,8 +98,23 @@ namespace VirtualClassroom.Core
             return activityGrades;
         }
 
-        public bool EditActivity(int professorId, Activity activity)
+        public bool EditActivity(int studentIdentifier, ActivityInfo activityInfo)
         {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Student student = studentRepository.GetById(studentIdentifier);
+
+            var activityInfoToEdit = student.ActivityInfos.ToList().Where(act => act.Id == activityInfo.Id).FirstOrDefault();
+
+            if (activityInfoToEdit == null)
+            {
+                return false;
+            }
+
+            activityInfoToEdit.Presence = activityInfo.Presence;
+            activityInfoToEdit.Grade = activityInfo.Grade;
+
+            studentRepository.Save();
+
             return true;
         }
     }

@@ -21,9 +21,11 @@ namespace VirtualClassroom.Models.ProfessorViewModels
 
         [Required(ErrorMessage = "Grade required")]
         [Range(1, 10, ErrorMessage = "Grade must be between 1 and 10")]
+        [Display(Name = "Grade")]
         public int Grade { get; set; }
 
         [Required(ErrorMessage = "Presence required")]
+        [Display(Name = "Presence")]
         public bool Presence { get; set; }
     }
 }
