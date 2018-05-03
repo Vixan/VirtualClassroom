@@ -5,8 +5,12 @@ namespace VirtualClassroom.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
-        [Display(Name = "Username")]
-        public string UserName { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         [Required]
         [EmailAddress]

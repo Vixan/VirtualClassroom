@@ -55,8 +55,8 @@ namespace VirtualClassroom.Authentication
 
             if (user.Id != null)
                 applicationUser = userManager.FindByIdAsync(user.Id);
-            else if (user.UserName != null)
-                applicationUser = userManager.FindByNameAsync(user.UserName);
+            else if (user.FirstName != null)
+                applicationUser = userManager.FindByNameAsync(user.FirstName);
             else if (user.Email != null)
                 applicationUser = userManager.FindByEmailAsync(user.Email);
 
@@ -296,12 +296,12 @@ namespace VirtualClassroom.Authentication
             return signInResult.Result.Succeeded;
         }
 
-        public AuthResult Register(string username, string email, string password, string role)
+        public AuthResult Register(UserData userData, string password, string role)
         {
-            if (username == null || password == null)
+            if (userData == null || password == null)
                 return new AuthResult { Succeded = false };
 
-            ApplicationUser newUser = new ApplicationUser { UserName = username, Email = email };
+            ApplicationUser newUser = new ApplicationUser { UserName = userData.Email, Email = userData.Email, FirstName = userData.FirstName, LastName = userData.LastName };
             Task<IdentityResult> identityResult = userManager.CreateAsync(newUser, password);
             identityResult.Wait();
 
@@ -482,7 +482,7 @@ namespace VirtualClassroom.Authentication
             if (applicationUser == null)
                 return null;
 
-            return new UserData { Id = applicationUser.Id, UserName = applicationUser.UserName, Email = applicationUser.Email, PhoneNumber = applicationUser.PhoneNumber };
+            return new UserData { Id = applicationUser.Id, FirstName = applicationUser.FirstName, LastName = applicationUser.LastName, Email = applicationUser.Email, PhoneNumber = applicationUser.PhoneNumber };
         }
 
         private AuthResult MapIdentityResultToAuth(IdentityResult identityResult)
