@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtualClassroom.Core.Shared;
@@ -68,19 +69,20 @@ namespace VirtualClassroom.Controllers
             {
                 var activityInfo = studentServices.GetActivityInfo(stud.Id, activityId);
 
-                activityDetails.Students.Add(new ActivityStudentVM
-                {
-                    Id = stud.Id,
-                    FirstName = stud.FirstName,
-                    LastName = stud.LastName,
-                    ActivityInfo = new ActivityStudentInfoVM
+                if (activityInfo != null)
+                    activityDetails.Students.Add(new ActivityStudentVM
                     {
-                        Id = activityInfo.Id,
-                        OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
-                        Grade = activityInfo.Grade,
-                        Presence = activityInfo.Presence
-                    }
-                });
+                        Id = stud.Id,
+                        FirstName = stud.FirstName,
+                        LastName = stud.LastName,
+                        ActivityInfo = new ActivityStudentInfoVM
+                        {
+                            Id = activityInfo.Id,
+                            OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
+                            Grade = activityInfo.Grade,
+                            Presence = activityInfo.Presence
+                        }
+                    });
             }
 
 
@@ -138,6 +140,59 @@ namespace VirtualClassroom.Controllers
             });
 
             professorServices.EditActivity(professorId, editedActivity);
+
+            return Redirect($"/Professors/{professorId}/Activities");
+        }
+
+        [HttpGet]
+        [Route("Professors/{professorId}/Activities/Add")]
+        public ActionResult ActivityAdd(int professorId)
+        {
+            return View(new ActivityAddVM {
+                OccurenceDates = new List<DateTime>(),
+                StudentsId = studentServices.GetAllStudents()
+                                            .Select(student => student.Id)
+                                            .ToList()
+            });
+        }
+
+        [HttpPost]
+        [Route("Professors/{professorId}/Activities/Add")]
+        public ActionResult ActivityAdd(int professorId, ActivityAddVM activityModel)
+        {
+            Activity activity = new Activity
+            {
+                Name = activityModel.Name,
+                Description = activityModel.Description,
+                ActivityType = activityServices.GetAllActivityTypes().ToList()
+                                               .Find(type => type.Name == activityModel.ActivityTypeName)
+            };
+
+            if(activityModel.OccurenceDates != null)
+            {
+                List<ActivityOccurence> activityOccurence = new List<ActivityOccurence>();
+                foreach(var occurenceDate in activityModel.OccurenceDates)
+                {
+                    activityOccurence.Add(new ActivityOccurence { Activity = activity, OccurenceDate = occurenceDate });
+                }
+
+                activity.OccurenceDates = activityOccurence;
+            }
+
+            if(activityModel.StudentsId.Count != 0)
+            {
+                List<StudentActivity> students = new List<StudentActivity>();
+                foreach(var studentId in activityModel.StudentsId)
+                {
+                    StudentActivity studentActivity = new StudentActivity { Activity = activity, Student = studentServices.GetStudent(studentId) };
+                    students.Add(studentActivity);
+                }
+
+                activity.StudentsLink = students;
+            }
+
+            if (!professorServices.CreateActivity(professorId, activity))
+                return View(activityModel);
 
             return Redirect($"/Professors/{professorId}/Activities");
         }

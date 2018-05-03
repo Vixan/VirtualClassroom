@@ -69,7 +69,7 @@ namespace VirtualClassroom.Core
         public IEnumerable<ActivityType> GetAllActivityTypes()
         {
             IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
-            return activitiesRepository.GetAll().Select(act => act.ActivityType).ToList();
+            return activitiesRepository.GetActivityTypes();
         }
 
         public IEnumerable<ActivityOccurence> GetActivityOccurences(int activityIdentifier)
