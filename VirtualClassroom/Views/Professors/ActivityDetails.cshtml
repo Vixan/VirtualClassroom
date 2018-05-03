@@ -17,22 +17,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var occurenceDate in Model.OccurenceDates)
+                    @foreach (var student in Model.Students)
                     {
-                        @foreach (var student in Model.Students)
+                        foreach (var activityInfo in student.ActivityInfos)
                         {
                             <tr>
                                 <td class="col-md-2">
-                                    @String.Format("{0:dd.MM.yyyy}", occurenceDate.OccurenceDate)
+                                    @String.Format("{0:dd.MM.yyyy}", activityInfo.OccurenceDate)
                                 </td>
                                 <td class="col-md-4">
                                     <a href="/Students/@student.Id/Details">@student.FirstName @student.LastName</a>
                                 </td>
                                 <td class="col-md-2">
-                                    @(student.ActivityInfo.Presence ? "Present" : "Absent")
+                                    @(activityInfo.Presence ? "Present" : "Absent")
                                 </td>
                                 <td class="col-md-2">
-                                    @(student.ActivityInfo.Grade > 0 ? $"{student.ActivityInfo.Grade}" : "—")
+                                    @(activityInfo.Grade > 0 ? $"{activityInfo.Grade}" : "—")
                                 </td>
                                 <td class="col-md-2">
                                     <a href="./@Model.Id/Students/@student.Id/Edit">

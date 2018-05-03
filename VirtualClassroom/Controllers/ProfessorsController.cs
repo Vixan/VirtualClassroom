@@ -45,44 +45,40 @@ namespace VirtualClassroom.Controllers
         [Route("Professors/{professorId}/Activities/{activityId}")]
         public ActionResult ActivityDetails(int professorId, int activityId)
         {
-            Professor professor = professorServices.GetProfessor(professorId);
-            Activity activity = professorServices.GetActivity(professorId, activityId);
-            IEnumerable<Student> students = studentServices.GetAllStudents().ToList();
-            IEnumerable<Student> activityStudents = activityServices.GetStudents(activity);
-            ICollection<ActivityOccurence> activityOccurences = activity.OccurenceDates.ToList();
-
-            if (!activityStudents.Any())
-            {
-                return View(null);
-            }
+            Activity currentActivity = activityServices.GetActivity(activityId);
+            List<Student> activityStudents = activityServices.GetStudents(currentActivity).ToList();
 
             ActivityDetailsVM activityDetails = new ActivityDetailsVM
             {
-                Id = activity.Id,
-                Name = activity.Name,
-                Students = new List<ActivityStudentVM>(),
-                OccurenceDates = activityOccurences
+                Id = currentActivity.Id,
+                Name = currentActivity.Name,
+                OccurenceDates = currentActivity.OccurenceDates,
+                Students = new List<ActivityStudentVM>()
             };
 
-            foreach (var stud in activityStudents)
-            {
-                var activityInfo = studentServices.GetActivityInfo(stud.Id, activityId);
-
+            activityStudents.ToList().ForEach(stud =>
                 activityDetails.Students.Add(new ActivityStudentVM
                 {
                     Id = stud.Id,
                     FirstName = stud.FirstName,
                     LastName = stud.LastName,
-                    ActivityInfo = new ActivityStudentInfoVM
-                    {
-                        Id = activityInfo.Id,
-                        OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
-                        Grade = activityInfo.Grade,
-                        Presence = activityInfo.Presence
-                    }
-                });
-            }
+                    ActivityInfos = new List<ActivityStudentInfoVM>()
+                })
+            );
 
+            activityStudents.ToList().ForEach(stud =>
+                stud.ActivityInfos.ToList().ForEach(act =>
+                    activityDetails.Students.ToList()
+                    .Find(s => s.Id == stud.Id)
+                    .ActivityInfos.Add(new ActivityStudentInfoVM
+                    {
+                        Id = stud.Id,
+                        Grade = act.Grade,
+                        OccurenceDate = act.OccurenceDate.OccurenceDate,
+                        Presence = act.Presence
+                    })
+                )
+            );
 
             return View(activityDetails);
         }

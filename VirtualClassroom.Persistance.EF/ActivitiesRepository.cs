@@ -16,7 +16,12 @@ namespace VirtualClassroom.Persistence.EF
         {
             return dataContext.Activities
                 .Where(activity => activity.Id == identifier)
+                    .Include(activity => activity.ActivityType)
                     .Include(activity => activity.OccurenceDates)
+                    .Include(activity => activity.StudentsLink)
+                        .ThenInclude(studentsLink => studentsLink.Student)
+                            .ThenInclude(student => student.ActivityInfos)
+                                .ThenInclude(activity => activity.OccurenceDate)
                 .FirstOrDefault();
         }
 
@@ -33,8 +38,9 @@ namespace VirtualClassroom.Persistence.EF
             return dataContext.Activities
                 .Include(activity => activity.OccurenceDates)
                 .Include(activity => activity.ActivityType)
-                .Include(activity =>activity.StudentsLink)
-                    .ThenInclude( studentsLink => studentsLink.Student);
+                .Include(activity => activity.StudentsLink)
+                    .ThenInclude(studentsLink => studentsLink.Student)
+                        .ThenInclude(student => student.ActivityInfos);
         }
 
         public List<Activity> GetByType(ActivityType type)

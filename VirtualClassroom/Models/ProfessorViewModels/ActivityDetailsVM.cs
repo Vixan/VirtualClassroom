@@ -18,6 +18,6 @@ namespace VirtualClassroom.Models.ProfessorViewModels
         
         public ICollection<ActivityStudentVM> Students { get; set; }
 
-        public ICollection<ActivityOccurence> OccurenceDates { get; set; }
+        public IEnumerable<ActivityOccurence> OccurenceDates { get; set; }
     }
 }
