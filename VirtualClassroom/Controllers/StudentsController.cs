@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Domain;
 using VirtualClassroom.Models.StudentViewModels;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace VirtualClassroom.Controllers
 {
@@ -24,7 +23,7 @@ namespace VirtualClassroom.Controllers
         // GET: Students
         public ActionResult Index()
         {
-            return View();
+            return NotFound();
         }
 
         // GET: Students/5/Activities
@@ -38,57 +37,36 @@ namespace VirtualClassroom.Controllers
                 return NotFound();
             }
 
-            return View(student);
+            StudentActivitiesVM model = new StudentActivitiesVM()
+            {
+                Activities = studentServices.GetActivities(student.Id),
+                Professors = new List<Professor>()
+            };
+
+            List<Professor> allProfessors = professorServices.GetAllProfessors().ToList();
+            foreach(var activity in model.Activities)
+            {
+                Professor activityProfessor = allProfessors.Find(prof => prof.Activities.ToList().Exists(act => act.Id == activity.Id));
+                model.Professors.Add(activityProfessor);
+            }
+
+            return View(model);
         }
 
         // GET: Students/5/Activities/1
         [Route("Students/{studentId}/Activities/{activityId}")]
-        public ActionResult ActivityInfo(int studentId, int activityId)
+        public ActionResult ActivityDetails(int studentId, int activityId)
         {
-            Student student = studentServices.GetStudent(studentId);
             Activity activity = studentServices.GetActivity(studentId, activityId);
+            var activityInfos = studentServices.GetActivityInfos(studentId, activityId);
 
-            var activityInfo = student.ActivityInfos.ToList().Find(actInfo => actInfo.ActivityId == activityId);
-
-            ActivityInfoVM activityDetails = new ActivityInfoVM
+            ActivityDetailsVm activityDetailsVm = new ActivityDetailsVm()
             {
-                Id = activity.Id,
-                Name = activity.Name,
-                OccurenceDate = activityInfo.OccurenceDate.OccurenceDate,
-                Presence = activityInfo.Presence,
-                Grade = activityInfo.Grade
+                ActivityName = activity.Name,
+                ActivityInfos = activityInfos
             };
 
-            return View(activityDetails);
-        }
-
-        // GET: Students/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Students/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Students/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return View(activityDetailsVm);
         }
     }
 }

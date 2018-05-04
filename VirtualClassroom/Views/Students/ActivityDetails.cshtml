@@ -1,0 +1,71 @@
+﻿@model VirtualClassroom.Models.StudentViewModels.ActivityDetailsVm
+
+@{
+    ViewData["Title"] = "ActivityDetails";
+}
+
+<h2>@Model.ActivityName</h2>
+<hr />
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Occurence</th>
+                <th>Presence</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var activityInfo in Model.ActivityInfos)
+            {
+                <tr>
+                    <td class="col-md-2">
+                        <p>@String.Format("{0:dd.MM.yyyy}", activityInfo.OccurenceDate.OccurenceDate)</p>
+                    </td>
+                    @{
+                        string presence;
+                        string grade;
+                    }
+                    <td class="col-md-2">
+                        @{ 
+                            if (activityInfo.Presence == null)
+                            {
+                                presence = "---";
+
+                            }
+                            else
+                            {
+                                presence = activityInfo.Presence ? "Present" : "Absent";
+
+                            }
+
+                            <p>@presence</p>
+                        }
+                    </td>
+
+                    <td class="col-md-2">
+                        @{
+                            if(presence != "Present" || activityInfo.Grade == null)
+                            {
+                                grade = "---";
+
+                            }
+                            else
+                            {
+                                grade = activityInfo.Grade.ToString();
+
+                            }
+
+                            <p>@grade</p>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <a asp-action="Activities">Back to List</a>
+</div>

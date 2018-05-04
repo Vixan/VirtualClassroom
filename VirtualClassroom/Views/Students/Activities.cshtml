@@ -1,32 +1,36 @@
-﻿@model VirtualClassroom.Domain.Student
+﻿@model VirtualClassroom.Models.StudentViewModels.StudentActivitiesVM
+
 @{
     ViewData["Title"] = "Activities";
 }
 
-<h2>Your Activities</h2>
+<h2>Activities</h2>
 
-<div class="row">
-    <div class="col-sm-12">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var activity in @Model.Activities)
-                {
-                    <tr>
-                        <td class="col-md-3">
-                            <a href="./Activities/@activity.Id">@activity.Name</a>
-                        </td>
-                        <td class="col-md-3">@activity.ActivityType.Name</td>
-                        <td class="col-md-6">@activity.Description</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Professor</th>
+        </tr>
+    </thead>
+    <tbody>
+@for (int i = 0; i < Model.Activities.Count(); i++) {
+        <tr>
+            <td class="col-md-2">
+                <a href="./Activities/@Model.Activities.ElementAt(i).Id">@Model.Activities.ElementAt(i).Name</a>
+            </td>
+            <td>
+                <p>@Model.Activities.ElementAt(i).Description</p>
+            </td>
+            <td class="col-md-2">
+                <p>@Model.Activities.ElementAt(i).ActivityType.Name</p>
+            </td>
+            <td class="col-md-2">
+                <p>@String.Format("{0} {1}", Model.Professors.ElementAt(i).FirstName, Model.Professors.ElementAt(i).LastName)</p>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

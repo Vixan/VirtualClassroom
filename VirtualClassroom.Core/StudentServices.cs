@@ -58,14 +58,22 @@ namespace VirtualClassroom.Core
             return studentActivity;
         }
 
-        public ActivityInfo GetActivityInfo(int studentIdentifier, int activityIdentifier)
+        public IEnumerable<ActivityInfo> GetActivityInfos(int studentIdentifier, int activityIdentifier)
         {
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
-            Activity studentActivity = studentRepository.GetActivities(studentIdentifier).Find(act => act.Id == activityIdentifier);
-            ActivityInfo activityInfo = student.ActivityInfos.ToList().Find(act => act.ActivityId == studentActivity.Id);
+
+            List<ActivityInfo> activityInfo = student.ActivityInfos.ToList().FindAll(actInfo => actInfo.ActivityId == activityIdentifier);
 
             return activityInfo;
+        }
+
+        public ActivityInfo GetActivityInfo(int studentIdentifier, int activityInfoIdentifier)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Student student = studentRepository.GetById(studentIdentifier);
+
+            return student.ActivityInfos.ToList().Find(actInfo => actInfo.ActivityId == activityInfoIdentifier);
         }
 
         public IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier)
