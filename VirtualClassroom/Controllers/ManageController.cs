@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
+using VirtualClassroom.Core.Shared;
 using VirtualClassroom.Models.ManageViewModels;
 using VirtualClassroom.Services;
 
@@ -16,6 +17,8 @@ namespace VirtualClassroom.Controllers
     [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
+        private readonly IStudentServices _studentServices;
+        private readonly IProfessorServices _professorServices;
         private readonly IAuthentication _authentication;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
@@ -24,11 +27,15 @@ namespace VirtualClassroom.Controllers
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
-          IAuthentication authentication,
-          IEmailSender emailSender,
-          ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+            IStudentServices studentServices,
+            IProfessorServices professorServices,
+            IAuthentication authentication,
+            IEmailSender emailSender,
+            ILogger<ManageController> logger,
+            UrlEncoder urlEncoder)
         {
+            _studentServices = studentServices;
+            _professorServices = professorServices;
             _authentication = authentication;
             _emailSender = emailSender;
             _logger = logger;
@@ -49,7 +56,8 @@ namespace VirtualClassroom.Controllers
 
             var model = new IndexViewModel
             {
-                Username = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = _authentication.IsUserEmailConfirmed(user),

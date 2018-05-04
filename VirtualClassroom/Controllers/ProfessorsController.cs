@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VirtualClassroom.Core.Shared;
@@ -135,6 +136,67 @@ namespace VirtualClassroom.Controllers
             });
 
             professorServices.EditActivity(professorId, editedActivity);
+
+            return Redirect($"/Professors/{professorId}/Activities");
+        }
+
+        [HttpGet]
+        [Route("Professors/{professorId}/Activities/Add")]
+        public ActionResult ActivityAdd(int professorId)
+        {
+            return View(new ActivityAddVM {
+                OccurenceDates = new List<DateTime>(),
+                StudentsId = studentServices.GetAllStudents()
+                                            .Select(student => student.Id)
+                                            .ToList()
+            });
+        }
+
+        [HttpPost]
+        [Route("Professors/{professorId}/Activities/Add")]
+        public ActionResult ActivityAdd(int professorId, ActivityAddVM activityModel)
+        {
+            Activity activity = new Activity
+            {
+                Name = activityModel.Name,
+                Description = activityModel.Description,
+                ActivityType = activityServices.GetAllActivityTypes().ToList()
+                                               .Find(type => type.Name == activityModel.ActivityTypeName)
+            };
+
+            if(activityModel.StudentsId.Count != 0)
+            {
+                List<StudentActivity> students = new List<StudentActivity>();
+                foreach(var studentId in activityModel.StudentsId)
+                {
+                    StudentActivity studentActivity = new StudentActivity { Activity = activity, Student = studentServices.GetStudent(studentId) };
+                    students.Add(studentActivity);
+                }
+
+                activity.StudentsLink = students;
+            }
+
+            if(activityModel.OccurenceDates != null)
+            {
+                List<ActivityOccurence> activityOccurence = new List<ActivityOccurence>();
+                foreach(var occurenceDate in activityModel.OccurenceDates)
+                {
+                    ActivityOccurence occurence = new ActivityOccurence { Activity = activity, OccurenceDate = occurenceDate };
+                    activityOccurence.Add(occurence);
+
+                    foreach(var studentLink in activity.StudentsLink)
+                    {
+                        Student student = studentLink.Student;
+
+                        student.ActivityInfos.Add(new ActivityInfo { Activity = activity, ActivityId = activity.Id, Student = student.Id, OccurenceDate = occurence });
+                    }
+                }
+
+                activity.OccurenceDates = activityOccurence;
+            }
+
+            if (!professorServices.CreateActivity(professorId, activity))
+                return View(activityModel);
 
             return Redirect($"/Professors/{professorId}/Activities");
         }

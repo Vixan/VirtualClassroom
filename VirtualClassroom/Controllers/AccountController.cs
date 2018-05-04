@@ -6,6 +6,8 @@ using System;
 using System.Threading.Tasks;
 using VirtualClassroom.Authentication.Services;
 using VirtualClassroom.CommonAbstractions;
+using VirtualClassroom.Core.Shared;
+using VirtualClassroom.Domain;
 using VirtualClassroom.Models.AccountViewModels;
 using VirtualClassroom.Services;
 
@@ -15,15 +17,21 @@ namespace VirtualClassroom.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly IStudentServices _studentServices;
+        private readonly IProfessorServices _professorServices;
         private readonly IAuthentication _authentication;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
+            IStudentServices studentServices,
+            IProfessorServices professorServices,
             IAuthentication authentication,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
+            _studentServices = studentServices;
+            _professorServices = professorServices;
             _authentication = authentication;
             _emailSender = emailSender;
             _logger = logger;
@@ -52,7 +60,7 @@ namespace VirtualClassroom.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                bool result = _authentication.Login(model.Username, model.Password, model.RememberMe, false);
+                bool result = _authentication.Login(model.Email, model.Password, model.RememberMe, false);
                 if (result)
                 {
                     _logger.LogInformation("User logged in.");
@@ -85,8 +93,8 @@ namespace VirtualClassroom.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                UserData user = new UserData { UserName = model.UserName, Email = model.Email };
-                AuthResult result = _authentication.Register(model.UserName, model.Email, model.Password, model.Role);
+                UserData user = new UserData { FirstName = model.FirstName, LastName = model.LastName, Email = model.Email };
+                AuthResult result = _authentication.Register(user, model.Password, model.Role);
                 if (result.Succeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -94,6 +102,17 @@ namespace VirtualClassroom.Controllers
                     string code = _authentication.GenerateEmailConfirmationToken(user);
                     var callbackUrl = Url.EmailConfirmationLink(_authentication.GetUserByEmail(user.Email).Id, code, Request.Scheme);
                     await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+
+                    if(model.Role == "Professor")
+                    {
+                        Professor professor = new Professor { FirstName = model.FirstName, LastName = model.LastName, Email = model.Email };
+                        _professorServices.AddProfessor(professor);
+                    }
+                    if(model.Role == "Student")
+                    {
+                        Student student = new Student { FirstName = model.FirstName, LastName = model.LastName, Email = model.Email };
+                        _studentServices.AddStudent(student);
+                    }
                     
                     _logger.LogInformation("User created a new account with password.");
                     return RedirectToLocal(returnUrl);

@@ -33,7 +33,7 @@ namespace VirtualClassroom.CommonAbstractions
 
         // AuthenticationMethods
         bool Login(string username, string password, bool rememberMe, bool lockoutOnFailure);
-        AuthResult Register(string username, string email, string password, string role);
+        AuthResult Register(UserData userData, string password, string role);
         void Logout();
 
         string GenerateEmailConfirmationToken(UserData user);
