@@ -63,6 +63,8 @@ namespace VirtualClassroom.Core
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
 
+            IEnumerable<ActivityInfo> activityInfos = student.ActivityInfos.ToList().FindAll(actInfo => actInfo.ActivityId == activityIdentifier);
+
             return student.ActivityInfos;
         }
 
@@ -79,7 +81,7 @@ namespace VirtualClassroom.Core
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
 
-            var activityInfoToEdit = student.ActivityInfos.Where(actInfo => actInfo.Id == activityInfo.Id).FirstOrDefault();
+            ActivityInfo activityInfoToEdit = student.ActivityInfos.Where(actInfo => actInfo.Id == activityInfo.Id).FirstOrDefault();
 
             activityInfoToEdit.Presence = activityInfo.Presence;
             activityInfoToEdit.Grade = activityInfo.Grade;

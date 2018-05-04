@@ -203,7 +203,7 @@ namespace VirtualClassroom.Controllers
             return Redirect($"/Professors/{professorId}/Activities");
         }
 
-        // GET: Professors/5/Activities/1/Students/3/Edit
+        // GET: Professors/5/Activities/1/Students/3/Edit/6
         [HttpGet]
         [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit/{activityInfoId}")]
         public ActionResult ActivityStudentInfoEdit(int professorId, int activityId, int studentId, int activityInfoId)
@@ -225,7 +225,7 @@ namespace VirtualClassroom.Controllers
             return View(activityDetails);
         }
 
-        // GET: Professors/5/Activities/1/Students/3/Edit
+        // GET: Professors/5/Activities/1/Students/3/Edit/6
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Professors/{professorId}/Activities/{activityId}/Students/{studentId}/Edit/{activityInfoId}")]
@@ -243,6 +243,17 @@ namespace VirtualClassroom.Controllers
             };
 
             studentServices.EditActivityInfo(studentId, activityInfoId, activityInfo);
+
+            return RedirectToAction("ActivityDetails");
+        }
+
+        // Post: Professors/5/Activities/1/Delete
+        [HttpDelete]
+        [Route("Professors/{professorId}/Activities/{activityId}/Delete")]
+        public ActionResult ActivityDelete(int professorId, int activityId)
+        {
+            Activity activityToDelete = activityServices.GetActivity(activityId); 
+            activityServices.DeleteActivity(activityToDelete);
 
             return RedirectToAction("ActivityDetails");
         }
