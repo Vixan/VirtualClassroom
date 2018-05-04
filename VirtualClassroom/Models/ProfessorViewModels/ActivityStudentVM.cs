@@ -20,6 +20,6 @@ namespace VirtualClassroom.Models.ProfessorViewModels
         [StringLength(100, MinimumLength = 2)]
         public string LastName { get; set; }
 
-        public ICollection<ActivityStudentInfoVM> ActivityInfos { get; set; }
+        public IEnumerable<ActivityStudentInfoVM> ActivityInfos { get; set; }
     }
 }

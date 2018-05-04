@@ -11,8 +11,9 @@ namespace VirtualClassroom.Core.Shared
         void DeleteStudent(Student student);
         IEnumerable<Activity> GetActivities(int studentIdentifier);
         Activity GetActivity(int studentIdentifier, int activityIdentifier);
-        ActivityInfo GetActivityInfo(int studentIdentifier, int activityIdentifier);
-        bool EditActivity(int studentIdentifier, ActivityInfo activityInfo);
+        IEnumerable<ActivityInfo> GetActivityInfos(int studentIdentifier, int activityIdentifier);
+        ActivityInfo GetActivityInfo(int studentIdentifier, int activityInfoIdentifier);
+        void EditActivityInfo(int studentIdentifier, int activityInfoIdentifier, ActivityInfo activityInfo);
         IEnumerable<int> GetActivityGrades(int studentIdentifier, int activityIdentifier);
         IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier);
     }

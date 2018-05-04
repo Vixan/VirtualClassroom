@@ -39,6 +39,7 @@ namespace VirtualClassroom.Persistence.EF
                 .Where(student => student.Id == identifier)
                     .Include(student => student.ActivitiesLink)
                     .Include(student => student.ActivityInfos)
+                        .ThenInclude(activityInfo => activityInfo.OccurenceDate)
                 .FirstOrDefault();
         }
 
