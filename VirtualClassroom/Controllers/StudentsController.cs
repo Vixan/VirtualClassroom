@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using VirtualClassroom.Core.Shared;
@@ -7,6 +8,7 @@ using VirtualClassroom.Models.StudentViewModels;
 
 namespace VirtualClassroom.Controllers
 {
+    [Authorize(Roles = "Student")]
     public class StudentsController : Controller
     {
         IProfessorServices professorServices = null;
