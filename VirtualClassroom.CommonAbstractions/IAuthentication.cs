@@ -5,6 +5,9 @@ namespace VirtualClassroom.CommonAbstractions
 {
     public interface IAuthentication : IInitializer
     {
+        // Verify user status
+        bool IsUserLoggedIn(ClaimsPrincipal user);
+
         // GetUser
         UserData GetUserByAssociatedUser(ClaimsPrincipal user);
         UserData GetUserById(string userId);

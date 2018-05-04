@@ -29,16 +29,8 @@
                     }
                     <td class="col-md-2">
                         @{ 
-                            if (activityInfo.Presence == null)
-                            {
-                                presence = "---";
 
-                            }
-                            else
-                            {
-                                presence = activityInfo.Presence ? "Present" : "Absent";
-
-                            }
+                            presence = activityInfo.Presence ? "Present" : "Absent";
 
                             <p>@presence</p>
                         }

@@ -36,6 +36,15 @@ namespace VirtualClassroom.Authentication
         }
         #endregion
 
+        #region VerifyUserStatu
+
+        public bool IsUserLoggedIn(ClaimsPrincipal user)
+        {
+            return signInManager.IsSignedIn(user);
+        }
+
+        #endregion
+
         #region GetUser
 
         private ApplicationUser GetUser(ClaimsPrincipal user)
