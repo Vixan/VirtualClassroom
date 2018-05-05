@@ -15,9 +15,9 @@ namespace VirtualClassroom.Core.Shared
         Activity GetActivity(int studentIdentifier, int activityIdentifier);
 
         IEnumerable<ActivityInfo> GetActivityInfos(int studentIdentifier, int activityIdentifier);
-        ActivityInfo GetActivityInfo(int studentIdentfier, int activityInfoIdentifer);
+        ActivityInfo GetActivityInfo(int studentIdentifier, int activityInfoIdentifier);
+        void EditActivityInfo(int studentIdentifier, int activityInfoIdentifier, ActivityInfo activityInfo);
 
-        bool EditActivity(int studentIdentifier, ActivityInfo activityInfo);
         IEnumerable<int> GetActivityGrades(int studentIdentifier, int activityIdentifier);
         IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier);
     }

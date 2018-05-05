@@ -63,9 +63,9 @@ namespace VirtualClassroom.Core
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
 
-            List<ActivityInfo> activityInfo = student.ActivityInfos.ToList().FindAll(actInfo => actInfo.ActivityId == activityIdentifier);
+            IEnumerable<ActivityInfo> activityInfos = student.ActivityInfos.ToList().FindAll(actInfo => actInfo.ActivityId == activityIdentifier);
 
-            return activityInfo;
+            return activityInfos;
         }
 
         public ActivityInfo GetActivityInfo(int studentIdentifier, int activityInfoIdentifier)
@@ -73,7 +73,20 @@ namespace VirtualClassroom.Core
             IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
             Student student = studentRepository.GetById(studentIdentifier);
 
-            return student.ActivityInfos.ToList().Find(actInfo => actInfo.ActivityId == activityInfoIdentifier);
+            return student.ActivityInfos.ToList().Find(actInfo => actInfo.Id == activityInfoIdentifier);
+        }
+
+        public void EditActivityInfo(int studentIdentifier, int activityInfoIdentifier, ActivityInfo activityInfo)
+        {
+            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
+            Student student = studentRepository.GetById(studentIdentifier);
+
+            ActivityInfo activityInfoToEdit = student.ActivityInfos.Where(actInfo => actInfo.Id == activityInfo.Id).FirstOrDefault();
+
+            activityInfoToEdit.Presence = activityInfo.Presence;
+            activityInfoToEdit.Grade = activityInfo.Grade;
+
+            studentRepository.Save();
         }
 
         public IEnumerable<bool> GetActivityAttendance(int studentIdentifier, int activityIdentifier)
@@ -104,26 +117,6 @@ namespace VirtualClassroom.Core
             }
 
             return activityGrades;
-        }
-
-        public bool EditActivity(int studentIdentifier, ActivityInfo activityInfo)
-        {
-            IStudentRepository studentRepository = persistanceContext.GetStudentRepository();
-            Student student = studentRepository.GetById(studentIdentifier);
-
-            var activityInfoToEdit = student.ActivityInfos.ToList().Where(act => act.Id == activityInfo.Id).FirstOrDefault();
-
-            if (activityInfoToEdit == null)
-            {
-                return false;
-            }
-
-            activityInfoToEdit.Presence = activityInfo.Presence;
-            activityInfoToEdit.Grade = activityInfo.Grade;
-
-            studentRepository.Save();
-
-            return true;
         }
     }
 }

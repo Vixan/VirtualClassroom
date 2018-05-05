@@ -14,22 +14,29 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Description</th>
+                    <th><a href="./Activities/Add" class="btn btn-info">Add new Activity</a></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var activity in @Model.Activities)
                 {
-                    <tr>
+                    <tr class="activity">
                         <td class="col-md-2">
                             <a href="./Activities/@activity.Id">@activity.Name</a>
                         </td>
                         <td class="col-md-2">@activity.ActivityType.Name</td>
                         <td class="col-md-6">@activity.Description</td>
                         <td class="col-md-3">
-                            <a href="./Activities/@activity.Id/Edit">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                                Edit
-                            </a>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                <a href="./Activities/@activity.Id/Edit" class="btn btn-default text-info">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                    Edit
+                                </a>
+                                <button type="button" class="btn btn-default text-danger" id="activity-remove" data-activity-id="@activity.Id">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    Delete
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -37,3 +44,22 @@
         </table>
     </div>
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", "#activity-remove", function (event) {
+                const activityId = $(this).data("activity-id");
+                console.log(activityId);
+
+                $.ajax({
+                    url: `./Activities/${activityId}/Delete`,
+                    type: "DELETE",
+                    success: function () {
+                        $(this).closest(".activity").remove();
+                    }
+                });
+            });
+        })
+    </script>
+}
