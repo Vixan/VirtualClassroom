@@ -49,7 +49,15 @@ namespace VirtualClassroom.Persistence.EF
                     Name = "Seminary"
                 }
             };
-            List<ActivityOccurence> activityOccurences = new List<ActivityOccurence>
+
+            foreach(var activityType in activityTypes)
+            {
+                if (activitiesRepository.GetActivityType(activityType.Name) == null)
+                    dataContext.ActitivityTypes.Add(activityType);
+            }
+
+            #region dummyData
+            /*List<ActivityOccurence> activityOccurences = new List<ActivityOccurence>
             {
                 new ActivityOccurence
                 {
@@ -219,7 +227,8 @@ namespace VirtualClassroom.Persistence.EF
                 }
             });
             professors.ForEach(prof => dataContext.Professors.Add(prof));
-            students.ForEach(stud => dataContext.Students.Add(stud));
+            students.ForEach(stud => dataContext.Students.Add(stud));*/
+            #endregion
 
             dataContext.SaveChanges();
         }
@@ -250,7 +259,7 @@ namespace VirtualClassroom.Persistence.EF
 
         public void InitializeData(IServiceProvider serviceProvider)
         {
-            //InitializeDbData();
+            InitializeDbData();
         }
     }
 }
