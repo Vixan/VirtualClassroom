@@ -30,5 +30,10 @@ namespace VirtualClassroom.Models.ProfessorViewModels
         public int ActivityTypeId { get; set; }
 
         public ICollection<ActivityType> ActivityTypes { get; set; }
+
+        [Display(Name = "Students")]
+        public ICollection<int> SelectedStudentsId { get; set; }
+
+        public ICollection<int> OtherStudentsId { get; set; }
     }
 }

@@ -50,15 +50,16 @@
         $(function () {
             $(document).on("click", "#activity-remove", function (event) {
                 const activityId = $(this).data("activity-id");
-                console.log(activityId);
 
                 $.ajax({
                     url: `./Activities/${activityId}/Delete`,
                     type: "DELETE",
                     success: function () {
-                        $(this).closest(".activity").remove();
+                        //$(this).closest(".activity").remove();
                     }
                 });
+
+                $(this).closest(".activity").remove();
             });
         })
     </script>

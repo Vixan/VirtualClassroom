@@ -22,6 +22,7 @@ namespace VirtualClassroom.Persistence.EF
                         .ThenInclude(activity => activity.OccurenceDates)
                     .Include(p => p.Activities)
                         .ThenInclude(activity => activity.StudentsLink)
+                            .ThenInclude(link => link.Student)
                 .FirstOrDefault();
 
             return professor.Activities.ToList();
@@ -39,7 +40,7 @@ namespace VirtualClassroom.Persistence.EF
         public override Professor GetById(int identifier)
         {
             var retProf = dataContext.Professors
-                .Where(professor => professor.Id == identifier)                    
+                .Where(professor => professor.Id == identifier)
                 .FirstOrDefault();
 
             if (retProf != null)

@@ -1,4 +1,6 @@
-﻿@model VirtualClassroom.Models.ProfessorViewModels.ActivityEditVM
+﻿@using VirtualClassroom.Core.Shared;
+@model VirtualClassroom.Models.ProfessorViewModels.ActivityEditVM
+@inject IStudentServices studentServices
 
 @{
     ViewData["Title"] = "Activity Edit";
@@ -25,16 +27,16 @@
                 <label asp-for="ActivityTypeId"></label>
                 <select asp-for="ActivityTypeId" class="form-control" id="activity-types">
                     @foreach (var activityType in Model.ActivityTypes)
-                    {
-                        @if (activityType.Id == Model.ActivityTypeId)
-                        {
-                            <option value="@activityType.Id" selected>@activityType.Name</option>
-                        }
-                        else
-                        {
-                            <option value="@activityType.Id">@activityType.Name</option>
-                        }
-                    }
+                {
+                    @if (activityType.Id == Model.ActivityTypeId)
+                {
+                    <option value="@activityType.Id" selected>@activityType.Name</option>
+            }
+            else
+            {
+                <option value="@activityType.Id">@activityType.Name</option>
+        }
+            }
                 </select>
                 <span asp-validation-for="ActivityTypeId" class="text-danger"></span>
             </div>
@@ -42,9 +44,9 @@
                 <label asp-for="OccurenceDates"></label>
                 <select asp-for="OccurenceDates" class="form-control" id="activity-occurence" multiple>
                     @foreach (var occurenceDate in Model.OccurenceDates)
-                    {
-                        <option value="@occurenceDate">@String.Format("{0:dd.MM.yyyy - hh:mm}", occurenceDate)</option>
-                    }
+                {
+                    <option value="@occurenceDate">@String.Format("{0:dd.MM.yyyy - hh:mm}", occurenceDate)</option>
+            }
                 </select>
                 <span asp-validation-for="OccurenceDates" class="text-danger"></span>
             </div>
@@ -63,6 +65,27 @@
             </div>
             <input type="submit" value="Save changes" class="btn btn-lg btn-block btn-info" id="activity-submit" />
         </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label asp-for="SelectedStudentsId"></label>
+                <select asp-for="SelectedStudentsId" class="form-control" id="students" multiple>
+                    @foreach (var studentId in Model.SelectedStudentsId)
+                    {
+                        var student = studentServices.GetStudent(studentId);
+                        <option selected value="@studentId">@String.Format("{0} {1}", student.FirstName, student.LastName)</option>
+                    }
+
+                    @foreach(var studentId in Model.OtherStudentsId)
+                    {
+                        var student = studentServices.GetStudent(studentId);
+                        <option value="@studentId">@String.Format("{0} {1}", student.FirstName, student.LastName)</option>
+                    }
+                </select>
+                <span asp-validation-for="SelectedStudentsId" class="text-danger"></span>
+            </div>
+        </div>
+
     </form>
 </div>
 
@@ -95,6 +118,14 @@
             $("#activity-occurence option").on("mousedown", function (event) {
                 event.preventDefault();
                 $(this).prop("selected", $(this).prop("selected"));
+
+                return false;
+            });
+
+            $("#students option").on("mousedown", function (event) {
+                event.preventDefault();
+
+                $(this).prop("selected", $(this).prop("selected") ? false : true);
 
                 return false;
             });

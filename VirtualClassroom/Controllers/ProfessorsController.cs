@@ -95,6 +95,10 @@ namespace VirtualClassroom.Controllers
             Activity activity = professorServices.GetActivity(professorId, activityId);
             List<ActivityType> allActivityTypes = activityServices.GetAllActivityTypes().ToList();
 
+            List<int> selectedStudents = activity.StudentsLink.Select(studentActivity => studentActivity.Student.Id).ToList();
+            List<int> otherStudents = studentServices.GetAllStudents().Select(student => student.Id).ToList();
+            otherStudents.RemoveAll(student => selectedStudents.Contains(student));
+
             ActivityEditVM activityEdit = new ActivityEditVM
             {
                 Id = activity.Id,
@@ -102,7 +106,9 @@ namespace VirtualClassroom.Controllers
                 Description = activity.Description,
                 ActivityTypeId = activity.ActivityType.Id,
                 OccurenceDates = activity.OccurenceDates.Select(occurenceDate => occurenceDate.OccurenceDate).ToList(),
-                ActivityTypes = allActivityTypes
+                ActivityTypes = allActivityTypes,
+                SelectedStudentsId = selectedStudents,
+                OtherStudentsId = otherStudents
             };
 
             return View(activityEdit);
@@ -112,31 +118,89 @@ namespace VirtualClassroom.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Professors/{professorId}/Activities/{activityId}/Edit")]
-        public ActionResult ActivityEdit(int professorId, ActivityEditVM activity)
+        public ActionResult ActivityEdit(int professorId, ActivityEditVM activityModel)
         {
             List<ActivityType> allActivityTypes = activityServices.GetAllActivityTypes().ToList();
-            List<ActivityOccurence> allActivityOccurences = activityServices.GetActivityOccurences(activity.Id).ToList();
+            Activity activity = activityServices.GetActivity(activityModel.Id); 
 
             Activity editedActivity = new Activity
             {
-                Id = activity.Id,
-                Name = activity.Name,
-                Description = activity.Description,
-                ActivityType = allActivityTypes.Find(act => act.Id == activity.ActivityTypeId),
-                OccurenceDates = new List<ActivityOccurence>()
+                Id = activityModel.Id,
+                Name = activityModel.Name,
+                Description = activityModel.Description,
+                ActivityType = allActivityTypes.Find(actType => actType.Id == activityModel.ActivityTypeId),
+                OccurenceDates = activity.OccurenceDates
             };
 
-            activity.OccurenceDates.ToList().ForEach(date =>
+            // good job
+            if(activityModel.OccurenceDates != null)
             {
-                var activityOccurence = allActivityOccurences.Find(act => act.OccurenceDate.Equals(date));
-                var lastId = activityOccurence != null ? activityOccurence.Id : 0;
+                List<DateTime> newActivityDates = null;
 
-                editedActivity.OccurenceDates.Add(new ActivityOccurence
+                newActivityDates = activityModel.OccurenceDates.ToList();
+                List<DateTime> oldDates = activity.OccurenceDates.Select(occurence => occurence.OccurenceDate).ToList();
+                newActivityDates.RemoveAll(date => oldDates.Contains(date));
+
+                foreach(var date in newActivityDates)
                 {
-                    Id = lastId++,
-                    OccurenceDate = date
-                });
-            });
+                    ActivityOccurence newActivityOccurence = new ActivityOccurence { OccurenceDate = date, Activity = activity };
+                    editedActivity.OccurenceDates.Add(newActivityOccurence);
+
+                    foreach(var link in activity.StudentsLink)
+                    {
+                        link.Student.ActivityInfos.Add(new ActivityInfo
+                        {
+                            Student = link.Student.Id,
+                            Activity = activity,
+                            ActivityId = activity.Id,
+                            OccurenceDate = newActivityOccurence
+                        });
+                    }
+                }
+            }
+
+            if(activityModel.SelectedStudentsId != null)
+            {
+                List<int> newStudents = null;
+                List<int> removedStudents = null;
+                List<int> oldStudents = activity.StudentsLink.Select(link => link.Student.Id).ToList();
+
+                newStudents = activityModel.SelectedStudentsId.ToList();
+                newStudents.RemoveAll(student => oldStudents.Contains(student));
+
+                removedStudents = oldStudents.Except(activityModel.SelectedStudentsId).ToList();
+                List<StudentActivity> oldStudentActivities = activity.StudentsLink.ToList();
+
+                List<Student> removedStudentsEntities = oldStudentActivities.Where(link => removedStudents.Contains(link.Student.Id))
+                                                                            .Select(link => link.Student).ToList();
+                foreach(var removedStudent in removedStudentsEntities)
+                {
+                    List<ActivityInfo> activityInfos = removedStudent.ActivityInfos.ToList();
+                    activityInfos.RemoveAll(actInfo => actInfo.ActivityId == activity.Id);
+
+                    removedStudent.ActivityInfos = activityInfos;
+                }
+
+                oldStudentActivities.RemoveAll(link => removedStudents.Contains(link.Student.Id));
+                editedActivity.StudentsLink = oldStudentActivities;
+
+                foreach(var newStudent in newStudents)
+                {
+                    Student student = studentServices.GetStudent(newStudent);
+                    editedActivity.StudentsLink.Add(new StudentActivity { Student = student, Activity = activity });
+
+                    foreach(var occurence in editedActivity.OccurenceDates)
+                    {
+                        student.ActivityInfos.Add(new ActivityInfo
+                        {
+                            Student = student.Id,
+                            Activity = activity,
+                            ActivityId = activity.Id,
+                            OccurenceDate = occurence
+                        });
+                    }
+                }
+            }
 
             professorServices.EditActivity(professorId, editedActivity);
 
@@ -168,17 +232,18 @@ namespace VirtualClassroom.Controllers
                                                .Find(type => type.Name == activityModel.ActivityTypeName)
             };
 
-            if (activityModel.StudentsId.Count != 0)
-            {
-                List<StudentActivity> students = new List<StudentActivity>();
-                foreach (var studentId in activityModel.StudentsId)
+            if (activityModel.StudentsId != null)
+                if (activityModel.StudentsId.Count != 0)
                 {
-                    StudentActivity studentActivity = new StudentActivity { Activity = activity, Student = studentServices.GetStudent(studentId) };
-                    students.Add(studentActivity);
-                }
+                    List<StudentActivity> students = new List<StudentActivity>();
+                    foreach (var studentId in activityModel.StudentsId)
+                    {
+                        StudentActivity studentActivity = new StudentActivity { Activity = activity, Student = studentServices.GetStudent(studentId) };
+                        students.Add(studentActivity);
+                    }
 
-                activity.StudentsLink = students;
-            }
+                    activity.StudentsLink = students;
+                }
 
             if (activityModel.OccurenceDates != null)
             {

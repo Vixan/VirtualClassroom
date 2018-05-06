@@ -68,7 +68,8 @@ namespace VirtualClassroom.Core
             activityToEdit.Name = activity.Name;
             activityToEdit.Description = activity.Description;
             activityToEdit.ActivityType = activity.ActivityType;
-            //activityToEdit.OccurenceDates = activity.OccurenceDates;
+            activityToEdit.OccurenceDates = activity.OccurenceDates;
+            activityToEdit.StudentsLink = activity.StudentsLink;
 
             professorRepository.Save();
 
