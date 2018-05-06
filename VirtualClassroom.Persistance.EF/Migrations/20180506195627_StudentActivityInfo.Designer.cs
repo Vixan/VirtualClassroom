@@ -11,9 +11,10 @@ using VirtualClassroom.Persistence.EF;
 namespace VirtualClassroom.Persistence.EF.Migrations
 {
     [DbContext(typeof(DummyDbContext))]
-    partial class DummyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180506195627_StudentActivityInfo")]
+    partial class StudentActivityInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -96,5 +96,21 @@ namespace VirtualClassroom.Core
 
             return students;
         }
+
+        public void RemoveActivityInfo(ActivityInfo activityInfo)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            activitiesRepository.RemoveActivityInfo(activityInfo);
+
+            activitiesRepository.Save();
+        }
+
+        public void RemoveStudentActivity(StudentActivity studentActivity)
+        {
+            IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+            activitiesRepository.RemoveStudentActivity(studentActivity);
+
+            activitiesRepository.Save();
+        }
     }
 }

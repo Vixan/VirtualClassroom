@@ -159,46 +159,62 @@ namespace VirtualClassroom.Controllers
                 }
             }
 
-            if(activityModel.SelectedStudentsId != null)
-            {
-                List<int> newStudents = null;
-                List<int> removedStudents = null;
-                List<int> oldStudents = activity.StudentsLink.Select(link => link.Student.Id).ToList();
 
+            List<int> newStudents = new List<int>();
+            List<int> removedStudents = new List<int>();
+            List<int> oldStudents = activity.StudentsLink.Select(link => link.Student.Id).ToList();
+
+            if (activityModel.SelectedStudentsId != null)
                 newStudents = activityModel.SelectedStudentsId.ToList();
-                newStudents.RemoveAll(student => oldStudents.Contains(student));
+            newStudents.RemoveAll(student => oldStudents.Contains(student));
 
+            if (activityModel.SelectedStudentsId != null)
                 removedStudents = oldStudents.Except(activityModel.SelectedStudentsId).ToList();
-                List<StudentActivity> oldStudentActivities = activity.StudentsLink.ToList();
+            else
+                removedStudents = oldStudents;
 
-                List<Student> removedStudentsEntities = oldStudentActivities.Where(link => removedStudents.Contains(link.Student.Id))
-                                                                            .Select(link => link.Student).ToList();
-                foreach(var removedStudent in removedStudentsEntities)
+            List<StudentActivity> oldStudentActivities = activity.StudentsLink.ToList();
+
+            List<Student> removedStudentsEntities = oldStudentActivities.Where(link => removedStudents.Contains(link.Student.Id))
+                                                                        .Select(link => link.Student).ToList();
+            foreach (var removedStudent in removedStudentsEntities)
+            {
+                List<ActivityInfo> activityInfos = removedStudent.ActivityInfos.ToList();
+                List<ActivityInfo> removedActivityInfos = activityInfos.Where(act => act.Activity.Id == activity.Id).ToList();
+
+                activityInfos.RemoveAll(actInfo => actInfo.Activity.Id == activity.Id);
+                removedStudent.ActivityInfos = activityInfos;
+
+                foreach (var activityInfoToRemove in removedActivityInfos)
                 {
-                    List<ActivityInfo> activityInfos = removedStudent.ActivityInfos.ToList();
-                    activityInfos.RemoveAll(actInfo => actInfo.ActivityId == activity.Id);
-
-                    removedStudent.ActivityInfos = activityInfos;
+                    activityServices.RemoveActivityInfo(activityInfoToRemove);
                 }
+            }
 
-                oldStudentActivities.RemoveAll(link => removedStudents.Contains(link.Student.Id));
-                editedActivity.StudentsLink = oldStudentActivities;
+            List<StudentActivity> removedStudentActivity = oldStudentActivities.Where(link => removedStudents.Contains(link.Student.Id)).ToList();
 
-                foreach(var newStudent in newStudents)
+            oldStudentActivities.RemoveAll(link => removedStudents.Contains(link.Student.Id));
+            editedActivity.StudentsLink = oldStudentActivities;
+
+            foreach (var studentActivityToRemove in removedStudentActivity)
+            {
+                activityServices.RemoveStudentActivity(studentActivityToRemove);
+            }
+
+            foreach (var newStudent in newStudents)
+            {
+                Student student = studentServices.GetStudent(newStudent);
+                editedActivity.StudentsLink.Add(new StudentActivity { Student = student, Activity = activity });
+
+                foreach (var occurence in editedActivity.OccurenceDates)
                 {
-                    Student student = studentServices.GetStudent(newStudent);
-                    editedActivity.StudentsLink.Add(new StudentActivity { Student = student, Activity = activity });
-
-                    foreach(var occurence in editedActivity.OccurenceDates)
+                    student.ActivityInfos.Add(new ActivityInfo
                     {
-                        student.ActivityInfos.Add(new ActivityInfo
-                        {
-                            Student = student.Id,
-                            Activity = activity,
-                            ActivityId = activity.Id,
-                            OccurenceDate = occurence
-                        });
-                    }
+                        Student = student.Id,
+                        Activity = activity,
+                        ActivityId = activity.Id,
+                        OccurenceDate = occurence
+                    });
                 }
             }
 

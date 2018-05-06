@@ -16,5 +16,8 @@ namespace VirtualClassroom.Persistence.EF
         public DbSet<VirtualClassroom.Domain.Activity> Activities { get; set; }
         public DbSet<VirtualClassroom.Domain.ActivityType> ActitivityTypes { get; set; }
         public DbSet<VirtualClassroom.Domain.ActivityOccurence> ActivityOccurences { get; set; }
+
+        public DbSet<VirtualClassroom.Domain.ActivityInfo> ActivityInfos { get; set; }
+        public DbSet<VirtualClassroom.Domain.StudentActivity> StudentActivities { get; set; }
     }
 }

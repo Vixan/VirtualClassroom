@@ -49,6 +49,16 @@ namespace VirtualClassroom.Persistence.Memory
             return activities.FindAll(activity => activity.ActivityType == type);
         }
 
+        public void RemoveActivityInfo(ActivityInfo activityInfo)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void RemoveStudentActivity(StudentActivity studentActivity)
+        {
+            //throw new NotImplementedException();
+        }
+
         public void Save()
         {
 

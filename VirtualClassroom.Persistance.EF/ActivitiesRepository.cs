@@ -18,10 +18,19 @@ namespace VirtualClassroom.Persistence.EF
                 .Where(activity => activity.Id == identifier)
                     .Include(activity => activity.ActivityType)
                     .Include(activity => activity.OccurenceDates)
+
                     .Include(activity => activity.StudentsLink)
                         .ThenInclude(studentsLink => studentsLink.Student)
                             .ThenInclude(student => student.ActivityInfos)
-                                .ThenInclude(activity => activity.OccurenceDate)
+                                .ThenInclude(activityInfo => activityInfo.OccurenceDate)
+
+                     .Include(activity => activity.StudentsLink)
+                        .ThenInclude(studentsLink => studentsLink.Student)
+                            .ThenInclude(student => student.ActivityInfos)
+                                .ThenInclude(activityInfo => activityInfo.Activity)
+
+                    .Include(activity => activity.StudentsLink)
+                        .ThenInclude(studentsLink => studentsLink.Activity)
                 .FirstOrDefault();
         }
 
@@ -64,6 +73,16 @@ namespace VirtualClassroom.Persistence.EF
             List<ActivityType> activityTypes = dataContext.ActitivityTypes.ToList();
 
             return activityTypes;
+        }
+
+        public void RemoveActivityInfo(ActivityInfo activityInfo)
+        {
+            dataContext.ActivityInfos.Remove(dataContext.ActivityInfos.Find(activityInfo.Id));
+        }
+
+        public void RemoveStudentActivity(StudentActivity studentActivity)
+        {
+            dataContext.StudentActivities.Remove(dataContext.StudentActivities.Find(studentActivity.Id));
         }
     }
 }

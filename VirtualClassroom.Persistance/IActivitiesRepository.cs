@@ -10,5 +10,8 @@ namespace VirtualClassroom.Persistence
 
         ActivityType GetActivityType(string activityTypeName);
         List<ActivityType> GetActivityTypes();
+
+        void RemoveActivityInfo(ActivityInfo activityInfo);
+        void RemoveStudentActivity(StudentActivity studentActivity);
     }
 }
