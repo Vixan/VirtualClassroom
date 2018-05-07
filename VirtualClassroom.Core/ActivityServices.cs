@@ -33,6 +33,21 @@ namespace VirtualClassroom.Core
         public void DeleteActivity(Activity activity)
         {
             IActivitiesRepository activitiesRepository = this.persistanceContext.GetActivitiesRepository();
+
+            foreach(var studentLink in activity.StudentsLink)
+            {
+                if (studentLink.Activity.Id == activity.Id)
+                {
+                    foreach(var activityInfo in studentLink.Student.ActivityInfos)
+                    {
+                        if (activityInfo.Activity.Id == activity.Id)
+                            activitiesRepository.RemoveActivityInfo(activityInfo);
+                    }
+
+                    activitiesRepository.RemoveStudentActivity(studentLink);
+                }
+            }
+
             activitiesRepository.Delete(activity);
         }
 
